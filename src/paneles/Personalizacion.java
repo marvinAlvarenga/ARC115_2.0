@@ -197,6 +197,7 @@ public class Personalizacion extends javax.swing.JPanel {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Resumen"));
 
+        tlbDetallesConfig.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tlbDetallesConfig.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 

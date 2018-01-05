@@ -6,6 +6,7 @@
 package main;
 
 import java.awt.Dimension;
+import paneles.Home;
 import paneles.Personalizacion;
 
 /**
@@ -16,6 +17,7 @@ public class Simulador extends javax.swing.JFrame {
     
     private final Dimension tamañoPaneles = new Dimension(902, 506);
     private Personalizacion personalizar; // Pantalla de Ajustes
+    private Home inicio; // Pantalla principal del simulador
 
     /**
      * Creates new form Simulador
@@ -46,6 +48,11 @@ public class Simulador extends javax.swing.JFrame {
         jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         btnInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/home.jpg"))); // NOI18N
+        btnInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInicioActionPerformed(evt);
+            }
+        });
 
         btnConfig.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/tuerca.png"))); // NOI18N
         btnConfig.addActionListener(new java.awt.event.ActionListener() {
@@ -116,6 +123,17 @@ public class Simulador extends javax.swing.JFrame {
         panelContenido.revalidate();
         panelContenido.repaint();
     }//GEN-LAST:event_btnConfigActionPerformed
+
+    private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
+        if(inicio == null){
+            inicio = new Home();
+            inicio.setSize(tamañoPaneles);
+        }
+        panelContenido.removeAll();
+        panelContenido.add(inicio);
+        panelContenido.revalidate();
+        panelContenido.repaint();
+    }//GEN-LAST:event_btnInicioActionPerformed
 
     /**
      * @param args the command line arguments
