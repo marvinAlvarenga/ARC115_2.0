@@ -6,6 +6,7 @@
 package main;
 
 import java.awt.Dimension;
+import paneles.Componentes;
 import paneles.Home;
 import paneles.Personalizacion;
 
@@ -16,8 +17,9 @@ import paneles.Personalizacion;
 public class Simulador extends javax.swing.JFrame {
     
     private final Dimension tamañoPaneles = new Dimension(902, 506);
-    private Personalizacion personalizar; // Pantalla de Ajustes
-    private Home inicio; // Pantalla principal del simulador
+    private Personalizacion personalizar;   // Pantalla de Ajustes
+    private Home inicio;                    // Pantalla principal del simulador
+    private Componentes componentes;        // Pantalla para ver los componentes y sus contenidos
 
     /**
      * Creates new form Simulador
@@ -62,6 +64,11 @@ public class Simulador extends javax.swing.JFrame {
         });
 
         btnConsultar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ram.png"))); // NOI18N
+        btnConsultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -134,6 +141,17 @@ public class Simulador extends javax.swing.JFrame {
         panelContenido.revalidate();
         panelContenido.repaint();
     }//GEN-LAST:event_btnInicioActionPerformed
+
+    private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
+        if(componentes == null){
+            componentes = new Componentes();
+            componentes.setSize(tamañoPaneles);
+        }
+        panelContenido.removeAll();
+        panelContenido.add(componentes);
+        panelContenido.revalidate();
+        panelContenido.repaint();
+    }//GEN-LAST:event_btnConsultarActionPerformed
 
     /**
      * @param args the command line arguments
