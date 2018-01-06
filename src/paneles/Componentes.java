@@ -6,7 +6,7 @@
 package paneles;
 
 /**
- *
+ * Consultar los componentes y sus contenidos en las difirentes posiciones.
  * @author Marvin
  */
 public class Componentes extends javax.swing.JPanel {

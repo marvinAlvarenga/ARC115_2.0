@@ -6,7 +6,7 @@
 package paneles;
 
 /**
- *
+ * Interacción con el proceso principal de peticiones del CPU.
  * @author Marvin
  */
 public class Home extends javax.swing.JPanel {

@@ -5,8 +5,10 @@
  */
 package paneles;
 
+import utilidades.Validador;
+
 /**
- *
+ * Configurar los componentes arquitectónicos y sus capacidades a soportar.
  * @author Marvin
  */
 public class Personalizacion extends javax.swing.JPanel {
@@ -63,6 +65,12 @@ public class Personalizacion extends javax.swing.JPanel {
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setText("Capacidad:");
 
+        txtCapacidadRam.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCapacidadRamKeyTyped(evt);
+            }
+        });
+
         comboBytesRam.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboBytesRam.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "KiloByte", "MegaByte", "GigaByte" }));
 
@@ -74,6 +82,12 @@ public class Personalizacion extends javax.swing.JPanel {
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel4.setText("Tamaño de Bloques:");
+
+        txtTamBloques.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtTamBloquesKeyTyped(evt);
+            }
+        });
 
         etiTamBloques.setText("Bytes");
 
@@ -136,6 +150,12 @@ public class Personalizacion extends javax.swing.JPanel {
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel7.setText("Capacidad:");
+
+        txtCapacidadCache.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCapacidadCacheKeyTyped(evt);
+            }
+        });
 
         comboBytesCache.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboBytesCache.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "KiloByte", "MegaByte", "GigaByte" }));
@@ -284,6 +304,18 @@ public class Personalizacion extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtCapacidadRamKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCapacidadRamKeyTyped
+        Validador.validarNumero(evt);
+    }//GEN-LAST:event_txtCapacidadRamKeyTyped
+
+    private void txtTamBloquesKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTamBloquesKeyTyped
+        Validador.validarNumero(evt);
+    }//GEN-LAST:event_txtTamBloquesKeyTyped
+
+    private void txtCapacidadCacheKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCapacidadCacheKeyTyped
+        Validador.validarNumero(evt);
+    }//GEN-LAST:event_txtCapacidadCacheKeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

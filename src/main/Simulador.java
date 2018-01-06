@@ -11,7 +11,7 @@ import paneles.Home;
 import paneles.Personalizacion;
 
 /**
- *
+ * Pantalla principal y contenedor de las diferentes pantallas.
  * @author Marvin
  */
 public class Simulador extends javax.swing.JFrame {

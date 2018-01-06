@@ -164,6 +164,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtCapacidadRam">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtCapacidadRamKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JComboBox" name="comboBytesRam">
           <Properties>
@@ -215,6 +218,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtTamBloques">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtTamBloquesKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="etiTamBloques">
           <Properties>
@@ -313,6 +319,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtCapacidadCache">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtCapacidadCacheKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JComboBox" name="comboBytesCache">
           <Properties>
