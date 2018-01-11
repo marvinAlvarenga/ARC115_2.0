@@ -5,12 +5,15 @@
  */
 package configuraciones;
 
+import utilidades.UnidadMedida;
+
 /**
  * Representa las especificaciones de la CACHE configuradas por el usuario
  * @author Marvin
  */
 public class EspecificacionCache {
     
+    private boolean especificacionCacheAplicada;
     private int capacidadCache;
     private int unidadMedidaCache;
     private int funcionCorrespondencia;
@@ -24,6 +27,42 @@ public class EspecificacionCache {
         this.funcionCorrespondencia = funcionCorrespondencia;
         this.algoReemplazo = algoReemplazo;
         this.ram = ram;
+        this.especificacionCacheAplicada = false;
+    }
+    
+    public void realizarCalculos(){
+        // calcular el numero total de lineas
+        int totalBytes = 0;
+        switch(unidadMedidaCache){
+            case UnidadMedida.KILO_BYTE:
+                totalBytes = capacidadCache * (int)Math.pow(2, 10);
+            break;
+            case UnidadMedida.MEGA_BYTE:
+                totalBytes = capacidadCache * (int)Math.pow(2, 20);
+            break;
+            case UnidadMedida.GIGA_BYTE:
+                totalBytes = capacidadCache * (int)Math.pow(2, 30);
+        }
+        
+        int totalLineas = 0;
+        switch(ram.getNivelDireccionable()){
+            case UnidadMedida.BYTE:
+                if(ram.getTamañoBloque()!=0)
+                    totalLineas = totalBytes / ram.getTamañoBloque();
+            break;
+            case UnidadMedida.PALABRA:
+                if(ram.getTamañoBloque()!=0 && ram.getTamañoPalabra()!=0)
+                    totalLineas = totalBytes / (ram.getTamañoBloque()*ram.getTamañoPalabra());
+        }
+        this.numTotalLineas = totalLineas;
+    }
+
+    public boolean isEspecificacionCacheAplicada() {
+        return especificacionCacheAplicada;
+    }
+
+    public void setEspecificacionCacheAplicada(boolean especificacionCacheAplicada) {
+        this.especificacionCacheAplicada = especificacionCacheAplicada;
     }
 
     public int getCapacidadCache() {

@@ -5,13 +5,21 @@
  */
 package paneles;
 
+import configuraciones.EspecificacionCache;
+import configuraciones.EspecificacionRam;
+import javax.swing.JOptionPane;
+import utilidades.UnidadMedida;
 import utilidades.Validador;
 
 /**
  * Configurar los componentes arquitectónicos y sus capacidades a soportar.
+ *
  * @author Marvin
  */
 public class Personalizacion extends javax.swing.JPanel {
+
+    private EspecificacionCache especificacionCache;
+    private EspecificacionRam especificacionRam;
 
     /**
      * Creates new form Personalizacion
@@ -42,6 +50,9 @@ public class Personalizacion extends javax.swing.JPanel {
         etiTamBloques = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         comboLlenadoRam = new javax.swing.JComboBox<>();
+        etiTamPalabra = new javax.swing.JLabel();
+        txtTamPalabra = new javax.swing.JTextField();
+        etiTamPalabraMedida = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         txtCapacidadCache = new javax.swing.JTextField();
@@ -79,6 +90,11 @@ public class Personalizacion extends javax.swing.JPanel {
 
         comboDireccionable.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboDireccionable.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Byte", "Palabra" }));
+        comboDireccionable.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboDireccionableActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel4.setText("Tamaño de Bloques:");
@@ -89,6 +105,7 @@ public class Personalizacion extends javax.swing.JPanel {
             }
         });
 
+        etiTamBloques.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         etiTamBloques.setText("Bytes");
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -97,6 +114,21 @@ public class Personalizacion extends javax.swing.JPanel {
         comboLlenadoRam.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboLlenadoRam.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Manual", "Aleatorio" }));
 
+        etiTamPalabra.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiTamPalabra.setText("Tamaño palabra:");
+        etiTamPalabra.setEnabled(false);
+
+        txtTamPalabra.setEditable(false);
+        txtTamPalabra.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtTamPalabraKeyTyped(evt);
+            }
+        });
+
+        etiTamPalabraMedida.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiTamPalabraMedida.setText("Bytes");
+        etiTamPalabraMedida.setEnabled(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -104,27 +136,35 @@ public class Personalizacion extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(etiTamPalabra)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtCapacidadRam, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtCapacidadRam, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(comboBytesRam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(comboDireccionable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtTamBloques, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel6))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(comboBytesRam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(comboDireccionable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(comboLlenadoRam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(etiTamBloques))
+                        .addGap(245, 245, 245))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
+                        .addComponent(txtTamPalabra, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtTamBloques, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(comboLlenadoRam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(etiTamBloques))
-                .addGap(245, 245, 245))
+                        .addComponent(etiTamPalabraMedida)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -143,7 +183,12 @@ public class Personalizacion extends javax.swing.JPanel {
                     .addComponent(comboDireccionable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(comboLlenadoRam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(etiTamPalabra)
+                    .addComponent(txtTamPalabra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiTamPalabraMedida))
+                .addContainerGap())
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("CACHE"));
@@ -214,6 +259,11 @@ public class Personalizacion extends javax.swing.JPanel {
         btnGuardar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/guardar.png"))); // NOI18N
         btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Resumen"));
 
@@ -317,6 +367,102 @@ public class Personalizacion extends javax.swing.JPanel {
         Validador.validarNumero(evt);
     }//GEN-LAST:event_txtCapacidadCacheKeyTyped
 
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        EspecificacionRam auxRam = null;
+        EspecificacionCache auxCache = null;
+
+        String capaRam = txtCapacidadRam.getText();
+        String tamBloques = txtTamBloques.getText();
+        String tamPalabra = txtTamPalabra.getText();
+        String capaCache = txtCapacidadCache.getText();
+        String mensaje = "";
+        int direccionableRam = comboDireccionable.getSelectedIndex();
+
+        if (!(capaRam.isEmpty() && tamBloques.isEmpty() && capaCache.isEmpty())) {
+
+            if (Validador.esPotenciaDeDos(capaRam) < 0) {
+                mensaje = "La capacidad de RAM debe ser potencia de 2.";
+            } else if (Validador.esPotenciaDeDos(tamBloques) < 0) {
+                mensaje = "El tamaño de bloques debe ser potencia de 2.";
+            } else if (Validador.esPotenciaDeDos(capaCache) < 0) {
+                mensaje = "La capacidad de CACHE debe de ser potencia de 2";
+            } else {
+                auxRam = new EspecificacionRam(Integer.parseInt(capaRam),
+                        comboBytesRam.getSelectedIndex(),
+                        comboDireccionable.getSelectedIndex(),
+                        Integer.parseInt(tamBloques), comboLlenadoRam.getSelectedIndex());
+
+                if (direccionableRam == UnidadMedida.PALABRA && !tamPalabra.isEmpty() && Validador.esPotenciaDeDos(tamPalabra) >= 0) { //Direccionamiento por palabra
+                    auxRam.setTamañoPalabra(Integer.parseInt(tamPalabra));
+                } else if (direccionableRam == UnidadMedida.PALABRA) {
+                    mensaje = "El tamaño de palabra no es valido.";
+                }
+
+                auxRam.realizarCalculos();
+                
+                auxCache = new EspecificacionCache(Integer.parseInt(capaCache),
+                        comboBytesCache.getSelectedIndex(), comboCorrespondencia.getSelectedIndex(),
+                        comboAlgoReemplazo.getSelectedIndex(), auxRam);
+                
+                auxCache.realizarCalculos();
+            }
+
+        } else {
+            mensaje = "Hay campos sin completar";
+        }
+
+        if (!mensaje.isEmpty()) {
+            JOptionPane.showMessageDialog(this, mensaje, "Advertencia", JOptionPane.WARNING_MESSAGE);
+        } else if (especificacionCache == null && especificacionRam == null) {
+            especificacionCache = auxCache;
+            especificacionRam = auxRam;
+        } else {
+            if (!especificacionCache.equals(auxCache)) {
+                especificacionCache = null;
+                especificacionCache = auxCache;
+            }
+            if (!especificacionRam.equals(auxRam)) {
+                especificacionRam = null;
+                especificacionRam = auxRam;
+            }
+        }
+        System.out.println("Hola");
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void comboDireccionableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboDireccionableActionPerformed
+        if (comboDireccionable.getSelectedIndex() == UnidadMedida.BYTE) {
+            etiTamPalabra.setEnabled(false);
+            etiTamPalabraMedida.setEnabled(false);
+            txtTamPalabra.setEditable(false);
+            etiTamBloques.setText("Bytes");
+        } else {
+            etiTamPalabra.setEnabled(true);
+            etiTamPalabraMedida.setEnabled(true);
+            txtTamPalabra.setEditable(true);
+            etiTamBloques.setText("Palabras");
+        }
+    }//GEN-LAST:event_comboDireccionableActionPerformed
+
+    private void txtTamPalabraKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTamPalabraKeyTyped
+        Validador.validarNumero(evt);
+    }//GEN-LAST:event_txtTamPalabraKeyTyped
+
+    public EspecificacionCache getEspecificacionCache() {
+        return especificacionCache;
+    }
+
+    public void setEspecificacionCache(EspecificacionCache especificacionCache) {
+        this.especificacionCache = especificacionCache;
+    }
+
+    public EspecificacionRam getEspecificacionRam() {
+        return especificacionRam;
+    }
+
+    public void setEspecificacionRam(EspecificacionRam especificacionRam) {
+        this.especificacionRam = especificacionRam;
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
@@ -327,6 +473,8 @@ public class Personalizacion extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> comboDireccionable;
     private javax.swing.JComboBox<String> comboLlenadoRam;
     private javax.swing.JLabel etiTamBloques;
+    private javax.swing.JLabel etiTamPalabra;
+    private javax.swing.JLabel etiTamPalabraMedida;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -344,5 +492,6 @@ public class Personalizacion extends javax.swing.JPanel {
     private javax.swing.JTextField txtCapacidadCache;
     private javax.swing.JTextField txtCapacidadRam;
     private javax.swing.JTextField txtTamBloques;
+    private javax.swing.JTextField txtTamPalabra;
     // End of variables declaration//GEN-END:variables
 }

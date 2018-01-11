@@ -24,4 +24,21 @@ public class Validador {
         }
     }
     
+    /**
+     * Devuelve la potencia de 2 de un numero.
+     * @param numCad El numero como cadena
+     * @return La potencia de 2. O -1 si el numero no es potencia de dos
+     */
+    public static int esPotenciaDeDos(String numCad){
+        int numero = Integer.parseInt(numCad);
+        int exponente = 0;
+        while(numero%2 == 0){
+            numero/=2;
+            exponente++;
+        }     
+        if(numero != 1)
+            exponente = -1;
+        return exponente;
+    }
+    
 }
