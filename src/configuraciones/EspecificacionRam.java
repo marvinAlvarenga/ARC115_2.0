@@ -9,7 +9,6 @@ import utilidades.Validador;
  */
 public class EspecificacionRam {
     
-    private boolean especificacionRamAplicada;
     private int capacidadMP;
     private int unidadMedidaMP;
     private int nivelDireccionable;
@@ -25,7 +24,6 @@ public class EspecificacionRam {
         this.nivelDireccionable = nivelDireccionable;
         this.tamañoBloque = tamañoBloque;
         this.tipoLlenado = tipoLlenado;
-        this.especificacionRamAplicada = false;
     }
     
     public void realizarCalculos(){
@@ -110,14 +108,6 @@ public class EspecificacionRam {
 
     public void setMaxDireccionable(int maxDireccionable) {
         this.maxDireccionable = maxDireccionable;
-    }
-
-    public boolean isEspecificacionRamAplicada() {
-        return especificacionRamAplicada;
-    }
-
-    public void setEspecificacionRamAplicada(boolean especificacionRamAplicada) {
-        this.especificacionRamAplicada = especificacionRamAplicada;
     }
 
     public int getUnidadMedidaMP() {

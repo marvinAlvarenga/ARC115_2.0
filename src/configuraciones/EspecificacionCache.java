@@ -5,6 +5,7 @@
  */
 package configuraciones;
 
+import cache.UtilCache;
 import utilidades.UnidadMedida;
 
 /**
@@ -13,13 +14,14 @@ import utilidades.UnidadMedida;
  */
 public class EspecificacionCache {
     
-    private boolean especificacionCacheAplicada;
     private int capacidadCache;
     private int unidadMedidaCache;
     private int funcionCorrespondencia;
     private int algoReemplazo;
     private EspecificacionRam ram;
     private int numTotalLineas;
+    private int cantidadLineasPorConjunto; //Para la asociativa por conjunto
+    private int cantidadDeConjuntos;//Para la asociativa por conjunto
 
     public EspecificacionCache(int capacidadCache, int unidadMedidaCache, int funcionCorrespondencia, int algoReemplazo, EspecificacionRam ram) {
         this.capacidadCache = capacidadCache;
@@ -27,7 +29,6 @@ public class EspecificacionCache {
         this.funcionCorrespondencia = funcionCorrespondencia;
         this.algoReemplazo = algoReemplazo;
         this.ram = ram;
-        this.especificacionCacheAplicada = false;
     }
     
     public void realizarCalculos(){
@@ -55,14 +56,14 @@ public class EspecificacionCache {
                     totalLineas = totalBytes / (ram.getTamañoBloque()*ram.getTamañoPalabra());
         }
         this.numTotalLineas = totalLineas;
-    }
-
-    public boolean isEspecificacionCacheAplicada() {
-        return especificacionCacheAplicada;
-    }
-
-    public void setEspecificacionCacheAplicada(boolean especificacionCacheAplicada) {
-        this.especificacionCacheAplicada = especificacionCacheAplicada;
+        
+        int totalConjuntos = 0;
+        if(funcionCorrespondencia == UtilCache.POR_CONJUNTO){
+            if(cantidadLineasPorConjunto!=0){
+                totalConjuntos = numTotalLineas / cantidadLineasPorConjunto;
+                this.cantidadDeConjuntos = totalConjuntos;
+            }
+        }
     }
 
     public int getCapacidadCache() {
@@ -111,6 +112,22 @@ public class EspecificacionCache {
 
     public void setNumTotalLineas(int numTotalLineas) {
         this.numTotalLineas = numTotalLineas;
+    }
+
+    public int getCantidadLineasPorConjunto() {
+        return cantidadLineasPorConjunto;
+    }
+
+    public void setCantidadLineasPorConjunto(int cantidadLineasPorConjunto) {
+        this.cantidadLineasPorConjunto = cantidadLineasPorConjunto;
+    }
+
+    public int getCantidadDeConjuntos() {
+        return cantidadDeConjuntos;
+    }
+
+    public void setCantidadDeConjuntos(int cantidadDeConjuntos) {
+        this.cantidadDeConjuntos = cantidadDeConjuntos;
     }
     
 }

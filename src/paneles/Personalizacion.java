@@ -5,8 +5,10 @@
  */
 package paneles;
 
+import cache.UtilCache;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
+import configuraciones.EstadoEspecificacion;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import utilidades.UnidadMedida;
@@ -62,6 +64,9 @@ public class Personalizacion extends javax.swing.JPanel {
         comboCorrespondencia = new javax.swing.JComboBox<>();
         jLabel9 = new javax.swing.JLabel();
         comboAlgoReemplazo = new javax.swing.JComboBox<>();
+        etiNumLineasConjunto = new javax.swing.JLabel();
+        txtLineasConjunto = new javax.swing.JTextField();
+        etiLineas = new javax.swing.JLabel();
         btnGuardar = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -77,6 +82,7 @@ public class Personalizacion extends javax.swing.JPanel {
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setText("Capacidad:");
 
+        txtCapacidadRam.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         txtCapacidadRam.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtCapacidadRamKeyTyped(evt);
@@ -100,6 +106,7 @@ public class Personalizacion extends javax.swing.JPanel {
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel4.setText("Tamaño de Bloques:");
 
+        txtTamBloques.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         txtTamBloques.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtTamBloquesKeyTyped(evt);
@@ -120,6 +127,7 @@ public class Personalizacion extends javax.swing.JPanel {
         etiTamPalabra.setEnabled(false);
 
         txtTamPalabra.setEditable(false);
+        txtTamPalabra.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         txtTamPalabra.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtTamPalabraKeyTyped(evt);
@@ -197,6 +205,7 @@ public class Personalizacion extends javax.swing.JPanel {
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel7.setText("Capacidad:");
 
+        txtCapacidadCache.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         txtCapacidadCache.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtCapacidadCacheKeyTyped(evt);
@@ -211,12 +220,33 @@ public class Personalizacion extends javax.swing.JPanel {
 
         comboCorrespondencia.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboCorrespondencia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Directa", "Asociativa", "Por Conjunto" }));
+        comboCorrespondencia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboCorrespondenciaActionPerformed(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel9.setText("Algoritmo de Reemplazo:");
 
         comboAlgoReemplazo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboAlgoReemplazo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "LRU", "FIFO", "Aleatorio" }));
+
+        etiNumLineasConjunto.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiNumLineasConjunto.setText("Num. Lineas del Conjunto:");
+        etiNumLineasConjunto.setEnabled(false);
+
+        txtLineasConjunto.setEditable(false);
+        txtLineasConjunto.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtLineasConjunto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtLineasConjuntoKeyTyped(evt);
+            }
+        });
+
+        etiLineas.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiLineas.setText("Lineas");
+        etiLineas.setEnabled(false);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -237,7 +267,14 @@ public class Personalizacion extends javax.swing.JPanel {
                         .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(comboAlgoReemplazo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(comboCorrespondencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(comboCorrespondencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(etiNumLineasConjunto)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtLineasConjunto, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(etiLineas)))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -253,7 +290,10 @@ public class Personalizacion extends javax.swing.JPanel {
                 .addGap(43, 43, 43)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(comboCorrespondencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboCorrespondencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiNumLineasConjunto)
+                    .addComponent(txtLineasConjunto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiLineas))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
 
@@ -298,10 +338,10 @@ public class Personalizacion extends javax.swing.JPanel {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(33, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -333,7 +373,7 @@ public class Personalizacion extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(207, 207, 207)
                                 .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 232, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -376,6 +416,7 @@ public class Personalizacion extends javax.swing.JPanel {
         String tamBloques = txtTamBloques.getText();
         String tamPalabra = txtTamPalabra.getText();
         String capaCache = txtCapacidadCache.getText();
+        String numLineasConjunto = txtLineasConjunto.getText();
         String mensaje = "";
         int direccionableRam = comboDireccionable.getSelectedIndex();
 
@@ -405,6 +446,12 @@ public class Personalizacion extends javax.swing.JPanel {
                         comboBytesCache.getSelectedIndex(), comboCorrespondencia.getSelectedIndex(),
                         comboAlgoReemplazo.getSelectedIndex(), auxRam);
                 
+                if(comboCorrespondencia.getSelectedIndex()==UtilCache.POR_CONJUNTO && !numLineasConjunto.isEmpty() && Integer.parseInt(numLineasConjunto)>1){
+                    auxCache.setCantidadLineasPorConjunto(Integer.parseInt(numLineasConjunto));
+                }else if(comboCorrespondencia.getSelectedIndex()==UtilCache.POR_CONJUNTO){
+                    mensaje = "Numero de lineas para el conjunto debe ser mayor que 1.";
+                }
+                
                 auxCache.realizarCalculos();
             }
 
@@ -422,11 +469,15 @@ public class Personalizacion extends javax.swing.JPanel {
             if (!especificacionCache.equals(auxCache)) {
                 especificacionCache = null;
                 especificacionCache = auxCache;
+                EstadoEspecificacion.setEspeciCacheEnHome(false); //Especificacion sin aplicar
+                EstadoEspecificacion.setEspeciCacheEnCompo(false); //Especificacion sin aplicar
                 pintarDetallesEnTabla();
             }
             if (!especificacionRam.equals(auxRam)) {
                 especificacionRam = null;
                 especificacionRam = auxRam;
+                EstadoEspecificacion.setEspeciRamEnHome(false); //Especificacion sin aplicar
+                EstadoEspecificacion.setEspeciRamEnCompo(false);//Especificacion sin aplicar
                 pintarDetallesEnTabla();
             }
         }
@@ -450,6 +501,22 @@ public class Personalizacion extends javax.swing.JPanel {
     private void txtTamPalabraKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTamPalabraKeyTyped
         Validador.validarNumero(evt);
     }//GEN-LAST:event_txtTamPalabraKeyTyped
+
+    private void txtLineasConjuntoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtLineasConjuntoKeyTyped
+        Validador.validarNumero(evt);
+    }//GEN-LAST:event_txtLineasConjuntoKeyTyped
+
+    private void comboCorrespondenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboCorrespondenciaActionPerformed
+        if(comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO){//Asociativa por conjunto
+            etiLineas.setEnabled(true);
+            etiNumLineasConjunto.setEnabled(true);
+            txtLineasConjunto.setEditable(true);
+        }else{
+            etiLineas.setEnabled(false);
+            etiNumLineasConjunto.setEnabled(false);
+            txtLineasConjunto.setEditable(false);
+        }
+    }//GEN-LAST:event_comboCorrespondenciaActionPerformed
 
     private void pintarDetallesEnTabla(){
         String aux;
@@ -480,7 +547,7 @@ public class Personalizacion extends javax.swing.JPanel {
         
         //Total de numero de bloques
         aux = String.valueOf(especificacionRam.getTotalNumeroBloques());
-        tablaDetalles.addRow(new Object[]{"Total de bloques: " + aux});
+        tablaDetalles.addRow(new Object[]{"Num. Tot. de bloques: " + aux});
         
         //Maximo direccionable
         aux = String.valueOf(especificacionRam.getMaxDireccionable());
@@ -499,17 +566,17 @@ public class Personalizacion extends javax.swing.JPanel {
         
         //Funcion de correspondencia
         switch(especificacionCache.getFuncionCorrespondencia()){
-            case 0: aux = "Directa"; break;
-            case 1: aux = "Totalmente Asociativa"; break;
-            case 2: aux = "Asociativa por conjunto";
+            case UtilCache.DIRECTA: aux = "Directa"; break;
+            case UtilCache.ASOCIATIVA: aux = "Totalmente Asociativa"; break;
+            case UtilCache.POR_CONJUNTO: aux = "Asociativa por conjunto";
         }
         tablaDetalles.addRow(new Object[]{"Correspondencia: " + aux});
         
         //Algoritmo de reemplazo
         switch(especificacionCache.getAlgoReemplazo()){
-            case 0: aux = "LRU"; break;
-            case 1: aux = "FIFO"; break;
-            case 2: aux = "Aleatorio";
+            case UtilCache.LRU: aux = "LRU"; break;
+            case UtilCache.FIFO: aux = "FIFO"; break;
+            case UtilCache.ALEATORIO: aux = "Aleatorio";
         }
         tablaDetalles.addRow(new Object[]{"Algorimo reemplazo: " + aux});
         
@@ -523,11 +590,17 @@ public class Personalizacion extends javax.swing.JPanel {
         
         //Numero de lineas
         aux = String.valueOf(especificacionCache.getNumTotalLineas());
-        tablaDetalles.addRow(new Object[]{"Numero de lineas: " + aux});
+        tablaDetalles.addRow(new Object[]{"Num. Tot. de lineas: " + aux});
         
         //Tamaño de direcciones
         aux = String.valueOf(especificacionCache.getRam().getMaxDireccionable());
         tablaDetalles.addRow(new Object[]{"Tamaño direcciones: " + aux + " bits"});
+        
+        //Numero de Lineas por conjunto
+        if(especificacionCache.getFuncionCorrespondencia() == UtilCache.POR_CONJUNTO){
+            tablaDetalles.addRow(new Object[]{"Conjuntos de: " + especificacionCache.getCantidadLineasPorConjunto() + " lineas"});
+            tablaDetalles.addRow(new Object[]{"Num. Tot. de conjuntos: " + especificacionCache.getCantidadDeConjuntos()+ " conjuntos"});
+        }
     }
     
     public EspecificacionCache getEspecificacionCache() {
@@ -555,6 +628,8 @@ public class Personalizacion extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> comboCorrespondencia;
     private javax.swing.JComboBox<String> comboDireccionable;
     private javax.swing.JComboBox<String> comboLlenadoRam;
+    private javax.swing.JLabel etiLineas;
+    private javax.swing.JLabel etiNumLineasConjunto;
     private javax.swing.JLabel etiTamBloques;
     private javax.swing.JLabel etiTamPalabra;
     private javax.swing.JLabel etiTamPalabraMedida;
@@ -574,6 +649,7 @@ public class Personalizacion extends javax.swing.JPanel {
     private javax.swing.JTable tlbDetallesConfig;
     private javax.swing.JTextField txtCapacidadCache;
     private javax.swing.JTextField txtCapacidadRam;
+    private javax.swing.JTextField txtLineasConjunto;
     private javax.swing.JTextField txtTamBloques;
     private javax.swing.JTextField txtTamPalabra;
     // End of variables declaration//GEN-END:variables

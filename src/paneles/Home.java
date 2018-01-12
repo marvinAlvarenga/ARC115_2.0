@@ -5,6 +5,12 @@
  */
 package paneles;
 
+import cache.UtilCache;
+import configuraciones.EspecificacionCache;
+import configuraciones.EspecificacionRam;
+import configuraciones.EstadoEspecificacion;
+import utilidades.UnidadMedida;
+
 /**
  * Interacción con el proceso principal de peticiones del CPU.
  * @author Marvin
@@ -16,6 +22,81 @@ public class Home extends javax.swing.JPanel {
      */
     public Home() {
         initComponents();
+    }
+    
+    public void aplicarEspecificacionRam(EspecificacionRam especiRam){
+        String aux;
+        //Capacidad de la RAM
+        aux = String.valueOf(especiRam.getCapacidadMP());
+        switch(especiRam.getUnidadMedidaMP()){
+            case UnidadMedida.KILO_BYTE: aux += " KiloBytes"; break;
+            case UnidadMedida.MEGA_BYTE: aux += " MegaBytes"; break;
+            case UnidadMedida.GIGA_BYTE: aux += " GigaBytes";
+        }
+        etiRam.setText("RAM: " + aux);
+        
+        //Tamaño Bloque
+        aux = String.valueOf(especiRam.getTamañoBloque());
+        switch(especiRam.getNivelDireccionable()){
+            case UnidadMedida.BYTE: aux += " Bytes"; break;
+            case UnidadMedida.PALABRA: aux += " Palabras";
+        }
+        etiTamañoBloque.setText("Tamaño Bloque: " + aux);
+        
+        //Total Bloques
+        etiTotalBloques.setText("Total Bloques: " + especiRam.getTotalNumeroBloques());
+        
+        //Maximo Direccionable
+        etiMaxDireccionable.setText("Maximo Direccionable: " + especiRam.getMaxDireccionable() + " bits");
+        
+        EstadoEspecificacion.setEspeciRamEnHome(true); //especificacion aplicada
+    }
+    
+    public void aplicarEspecificacionCache(EspecificacionCache especificaCache){
+        String aux;
+        EspecificacionRam  especiRam = especificaCache.getRam();
+        
+        //Capacidad Cache
+        aux = String.valueOf(especificaCache.getCapacidadCache());
+        switch(especificaCache.getUnidadMedidaCache()){
+            case UnidadMedida.KILO_BYTE: aux += " KiloBytes"; break;
+            case UnidadMedida.MEGA_BYTE: aux += " MegaBytes"; break;
+            case UnidadMedida.GIGA_BYTE: aux += " GigaBytes";
+        }
+        etiCache.setText("CACHE: " + aux);
+        
+        //Correspondencia
+        switch(especificaCache.getFuncionCorrespondencia()){
+            case UtilCache.DIRECTA: aux = "Directa"; break;
+            case UtilCache.ASOCIATIVA: aux = "Asociativa"; break;
+            case UtilCache.POR_CONJUNTO: aux = "Por Conjuntos";
+        }
+        etiCorrespondencia.setText("Correspondencia: " + aux);
+        
+        //Tamaño de linea
+        aux = String.valueOf(especiRam.getTamañoBloque());
+        switch(especiRam.getNivelDireccionable()){
+            case UnidadMedida.BYTE: aux += " Bytes"; break;
+            case UnidadMedida.PALABRA: aux += " Palabras";
+        }
+        etiTamLinea.setText("Tamaño de Linea: " + aux);
+        
+        //Numero de Lineas
+        etiNumLineas.setText("Numero de Lineas: " + especificaCache.getNumTotalLineas());
+        
+        //Tamaño de direcciones
+        aux = String.valueOf(especificaCache.getRam().getMaxDireccionable());
+        etiTamDirecciones.setText("Tamaño direcciones: " + aux + " bits");
+        
+        //Reemplazo
+        switch(especificaCache.getAlgoReemplazo()){
+            case UtilCache.LRU: aux = "LRU"; break;
+            case UtilCache.FIFO: aux = "FIFO"; break;
+            case UtilCache.ALEATORIO: aux = "Aleatorio";
+        }
+        etiReemplazo.setText("Reemplazo: " + aux);
+        
+        EstadoEspecificacion.setEspeciCacheEnHome(true); //Especificacion aplicada
     }
 
     /**

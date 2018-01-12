@@ -5,6 +5,9 @@
  */
 package main;
 
+import configuraciones.EspecificacionCache;
+import configuraciones.EspecificacionRam;
+import configuraciones.EstadoEspecificacion;
 import java.awt.Dimension;
 import paneles.Componentes;
 import paneles.Home;
@@ -136,6 +139,19 @@ public class Simulador extends javax.swing.JFrame {
             inicio = new Home();
             inicio.setSize(tamañoPaneles);
         }
+        
+        if(personalizar != null){
+            EspecificacionCache espeCache = personalizar.getEspecificacionCache();
+            EspecificacionRam espeRam = personalizar.getEspecificacionRam();
+            
+            if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnHome()){ //No ha sido aplicada en el panel HOME
+                inicio.aplicarEspecificacionCache(espeCache);
+            }
+            if(espeRam != null && !EstadoEspecificacion.isEspeciRamEnHome()){ // No ha sido aplicada en el home la ram
+                inicio.aplicarEspecificacionRam(espeRam);
+            }
+        }
+        
         panelContenido.removeAll();
         panelContenido.add(inicio);
         panelContenido.revalidate();
@@ -147,6 +163,14 @@ public class Simulador extends javax.swing.JFrame {
             componentes = new Componentes();
             componentes.setSize(tamañoPaneles);
         }
+        
+        if(personalizar != null){
+            EspecificacionCache espeCache = personalizar.getEspecificacionCache();
+            if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnCompo()){ //No han sido aplicada en el panel de componentes
+                componentes.aplicarEspecificacion(espeCache);
+            }
+        }
+        
         panelContenido.removeAll();
         panelContenido.add(componentes);
         panelContenido.revalidate();
