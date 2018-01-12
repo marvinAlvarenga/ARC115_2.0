@@ -40,6 +40,7 @@ public class Home extends javax.swing.JPanel {
         jLabel10 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tlbFormatoCache = new javax.swing.JTable();
+        etiReemplazo = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         comboTipoOperacion = new javax.swing.JComboBox<>();
@@ -109,6 +110,9 @@ public class Home extends javax.swing.JPanel {
         ));
         jScrollPane1.setViewportView(tlbFormatoCache);
 
+        etiReemplazo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiReemplazo.setText("Reemplazo:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -123,6 +127,9 @@ public class Home extends javax.swing.JPanel {
                 .addGap(86, 86, 86)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(etiReemplazo)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(etiCache)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel10)
@@ -133,7 +140,7 @@ public class Home extends javax.swing.JPanel {
                             .addComponent(etiTamLinea)
                             .addComponent(etiCorrespondencia)
                             .addComponent(etiTamDirecciones))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 152, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(37, 37, 37))))
         );
@@ -162,7 +169,8 @@ public class Home extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(etiTamDirecciones))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(etiReemplazo))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Peticiones CPU"));
@@ -399,7 +407,7 @@ public class Home extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -426,6 +434,7 @@ public class Home extends javax.swing.JPanel {
     private javax.swing.JLabel etiMaxDireccionable;
     private javax.swing.JLabel etiNumLineas;
     private javax.swing.JLabel etiRam;
+    private javax.swing.JLabel etiReemplazo;
     private javax.swing.JLabel etiTamDirecciones;
     private javax.swing.JLabel etiTamLinea;
     private javax.swing.JLabel etiTamañoBloque;

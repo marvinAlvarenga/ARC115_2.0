@@ -72,14 +72,6 @@ public class EspecificacionRam {
         this.capacidadMP = capacidadMP;
     }
 
-    public int getUnidadMedida() {
-        return unidadMedidaMP;
-    }
-
-    public void setUnidadMedida(int unidadMedidaMP) {
-        this.unidadMedidaMP = unidadMedidaMP;
-    }
-
     public int getNivelDireccionable() {
         return nivelDireccionable;
     }

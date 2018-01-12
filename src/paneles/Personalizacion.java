@@ -8,6 +8,7 @@ package paneles;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import utilidades.UnidadMedida;
 import utilidades.Validador;
 
@@ -378,7 +379,7 @@ public class Personalizacion extends javax.swing.JPanel {
         String mensaje = "";
         int direccionableRam = comboDireccionable.getSelectedIndex();
 
-        if (!(capaRam.isEmpty() && tamBloques.isEmpty() && capaCache.isEmpty())) {
+        if (!capaRam.isEmpty() && !tamBloques.isEmpty() && !capaCache.isEmpty()) {
 
             if (Validador.esPotenciaDeDos(capaRam) < 0) {
                 mensaje = "La capacidad de RAM debe ser potencia de 2.";
@@ -416,14 +417,17 @@ public class Personalizacion extends javax.swing.JPanel {
         } else if (especificacionCache == null && especificacionRam == null) {
             especificacionCache = auxCache;
             especificacionRam = auxRam;
+            pintarDetallesEnTabla();
         } else {
             if (!especificacionCache.equals(auxCache)) {
                 especificacionCache = null;
                 especificacionCache = auxCache;
+                pintarDetallesEnTabla();
             }
             if (!especificacionRam.equals(auxRam)) {
                 especificacionRam = null;
                 especificacionRam = auxRam;
+                pintarDetallesEnTabla();
             }
         }
         System.out.println("Hola");
@@ -447,6 +451,85 @@ public class Personalizacion extends javax.swing.JPanel {
         Validador.validarNumero(evt);
     }//GEN-LAST:event_txtTamPalabraKeyTyped
 
+    private void pintarDetallesEnTabla(){
+        String aux;
+        
+        //Limpiar tabla de detalles
+        DefaultTableModel tablaDetalles = (DefaultTableModel)tlbDetallesConfig.getModel();
+        for(int i=tablaDetalles.getRowCount()-1; i>=0; i--)
+            tablaDetalles.removeRow(i);
+        
+        tablaDetalles.addRow(new Object[]{"---------RAM-----------"});
+
+        //Capacidad de la RAM
+        aux = String.valueOf(especificacionRam.getCapacidadMP());
+        switch(especificacionRam.getUnidadMedidaMP()){
+            case UnidadMedida.KILO_BYTE: aux += " KiloBytes"; break;
+            case UnidadMedida.MEGA_BYTE: aux += " MegaBytes"; break;
+            case UnidadMedida.GIGA_BYTE: aux += " GigaBytes";
+        }
+        tablaDetalles.addRow(new Object[]{"Capacidad RAM: " + aux});
+        
+        //Tamaño de bloque RAM
+        aux =  String.valueOf(especificacionRam.getTamañoBloque());
+        switch(especificacionRam.getNivelDireccionable()){
+            case UnidadMedida.BYTE: aux += " Bytes"; break;
+            case UnidadMedida.PALABRA: aux += " Palabras";
+        }
+        tablaDetalles.addRow(new Object[]{"Tamaño de bloques: " + aux});
+        
+        //Total de numero de bloques
+        aux = String.valueOf(especificacionRam.getTotalNumeroBloques());
+        tablaDetalles.addRow(new Object[]{"Total de bloques: " + aux});
+        
+        //Maximo direccionable
+        aux = String.valueOf(especificacionRam.getMaxDireccionable());
+        tablaDetalles.addRow(new Object[]{"Máximo direccionable: " + aux + " bits"});
+        
+        tablaDetalles.addRow(new Object[]{"--------CACHE-----------"});
+        
+        //Capacidad de la cache
+        aux = String.valueOf(especificacionCache.getCapacidadCache());
+        switch(especificacionCache.getUnidadMedidaCache()){
+            case UnidadMedida.KILO_BYTE: aux += " KiloBytes"; break;
+            case UnidadMedida.MEGA_BYTE: aux += " MegaBytes"; break;
+            case UnidadMedida.GIGA_BYTE: aux += " GigaBytes";
+        }
+        tablaDetalles.addRow(new Object[]{"Capacidad Cache: " + aux});
+        
+        //Funcion de correspondencia
+        switch(especificacionCache.getFuncionCorrespondencia()){
+            case 0: aux = "Directa"; break;
+            case 1: aux = "Totalmente Asociativa"; break;
+            case 2: aux = "Asociativa por conjunto";
+        }
+        tablaDetalles.addRow(new Object[]{"Correspondencia: " + aux});
+        
+        //Algoritmo de reemplazo
+        switch(especificacionCache.getAlgoReemplazo()){
+            case 0: aux = "LRU"; break;
+            case 1: aux = "FIFO"; break;
+            case 2: aux = "Aleatorio";
+        }
+        tablaDetalles.addRow(new Object[]{"Algorimo reemplazo: " + aux});
+        
+        //Tamaño de linea cache
+        aux = String.valueOf(especificacionCache.getRam().getTamañoBloque());
+        switch(especificacionCache.getRam().getNivelDireccionable()){
+            case UnidadMedida.BYTE: aux += " Bytes"; break;
+            case UnidadMedida.PALABRA: aux += " Palabras";
+        }
+        tablaDetalles.addRow(new Object[]{"Tamaño de linea: " + aux});
+        
+        //Numero de lineas
+        aux = String.valueOf(especificacionCache.getNumTotalLineas());
+        tablaDetalles.addRow(new Object[]{"Numero de lineas: " + aux});
+        
+        //Tamaño de direcciones
+        aux = String.valueOf(especificacionCache.getRam().getMaxDireccionable());
+        tablaDetalles.addRow(new Object[]{"Tamaño direcciones: " + aux + " bits"});
+    }
+    
     public EspecificacionCache getEspecificacionCache() {
         return especificacionCache;
     }
