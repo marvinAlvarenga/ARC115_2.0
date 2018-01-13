@@ -166,8 +166,13 @@ public class Simulador extends javax.swing.JFrame {
         
         if(personalizar != null){
             EspecificacionCache espeCache = personalizar.getEspecificacionCache();
+            EspecificacionRam espeRam = personalizar.getEspecificacionRam();
+            
             if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnCompo()){ //No han sido aplicada en el panel de componentes
-                componentes.aplicarEspecificacion(espeCache);
+                componentes.aplicarEspecificacionCache(espeCache);
+            }
+            if(espeRam != null && !EstadoEspecificacion.isEspeciRamEnCompo()){
+                componentes.aplicarEspecificacionRam(espeRam);
             }
         }
         

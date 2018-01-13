@@ -16,7 +16,7 @@ public class EspecificacionRam {
     private int tipoLlenado;
     private int tamañoPalabra; //Numero de Bytes para la palabra o -1 si no es direccionable por Palabra.
     private int maxDireccionable; // numero de bits de la direccion
-    private int totalNumeroBloques;
+    private long totalNumeroBloques;
 
     public EspecificacionRam(int capacidadMP, int unidadMedidaMP, int nivelDireccionable, int tamañoBloque, int tipoLlenado) {
         this.capacidadMP = capacidadMP;
@@ -28,20 +28,20 @@ public class EspecificacionRam {
     
     public void realizarCalculos(){
         //calcular el maximo direccionable y el numero total de bloques de memoria
-        int totalBytes = 0;
+        long totalBytes = 0;
         switch(unidadMedidaMP){
             case UnidadMedida.KILO_BYTE:
-                totalBytes = capacidadMP * (int)Math.pow(2, 10);
+                totalBytes = capacidadMP * (long)Math.pow(2, 10);
             break;
             case UnidadMedida.MEGA_BYTE:
-                totalBytes = capacidadMP * (int)Math.pow(2, 20);
+                totalBytes = capacidadMP * (long)Math.pow(2, 20);
             break;
             case UnidadMedida.GIGA_BYTE:
-                totalBytes = capacidadMP * (int)Math.pow(2, 30);
+                totalBytes = capacidadMP * (long)Math.pow(2, 30);
         }
         this.maxDireccionable = Validador.esPotenciaDeDos(String.valueOf(totalBytes));
         
-        int totalBloques = 0;
+        long totalBloques = 0;
         switch(nivelDireccionable){
             case UnidadMedida.BYTE:
                 if(tamañoBloque!=0)
@@ -94,7 +94,7 @@ public class EspecificacionRam {
         this.tipoLlenado = tipoLlenado;
     }
 
-    public int getTotalNumeroBloques() {
+    public long getTotalNumeroBloques() {
         return totalNumeroBloques;
     }
 
@@ -116,6 +116,59 @@ public class EspecificacionRam {
 
     public void setUnidadMedidaMP(int unidadMedidaMP) {
         this.unidadMedidaMP = unidadMedidaMP;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + this.capacidadMP;
+        hash = 97 * hash + this.unidadMedidaMP;
+        hash = 97 * hash + this.nivelDireccionable;
+        hash = 97 * hash + this.tamañoBloque;
+        hash = 97 * hash + this.tipoLlenado;
+        hash = 97 * hash + this.tamañoPalabra;
+        hash = 97 * hash + this.maxDireccionable;
+        hash = (int) (97 * hash + this.totalNumeroBloques);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final EspecificacionRam other = (EspecificacionRam) obj;
+        if (this.capacidadMP != other.capacidadMP) {
+            return false;
+        }
+        if (this.unidadMedidaMP != other.unidadMedidaMP) {
+            return false;
+        }
+        if (this.nivelDireccionable != other.nivelDireccionable) {
+            return false;
+        }
+        if (this.tamañoBloque != other.tamañoBloque) {
+            return false;
+        }
+        if (this.tipoLlenado != other.tipoLlenado) {
+            return false;
+        }
+        if (this.tamañoPalabra != other.tamañoPalabra) {
+            return false;
+        }
+        if (this.maxDireccionable != other.maxDireccionable) {
+            return false;
+        }
+        if (this.totalNumeroBloques != other.totalNumeroBloques) {
+            return false;
+        }
+        return true;
     }
     
 }

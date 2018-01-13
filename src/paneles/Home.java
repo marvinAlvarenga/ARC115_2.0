@@ -9,6 +9,10 @@ import cache.UtilCache;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
 import configuraciones.EstadoEspecificacion;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import utilidades.UnidadMedida;
 
 /**
@@ -95,6 +99,42 @@ public class Home extends javax.swing.JPanel {
             case UtilCache.ALEATORIO: aux = "Aleatorio";
         }
         etiReemplazo.setText("Reemplazo: " + aux);
+        
+        //Creacion de columnas del Formato direcciones en CACHE
+        
+        DefaultTableModel tablaFormato = (DefaultTableModel) tlbFormatoCache.getModel();
+        DefaultTableModel tablaEjecu = (DefaultTableModel) tlbEjecucion.getModel();
+        
+        for(int i=tablaFormato.getRowCount()-1; i>=0; i--)
+            tablaFormato.removeRow(i);
+        for(int i=tablaEjecu.getRowCount()-1; i>=0; i--)
+            tablaEjecu.removeRow(i);
+        
+        switch(especificaCache.getFuncionCorrespondencia()){
+            case UtilCache.DIRECTA:
+                tablaFormato.setColumnCount(3);
+                tablaFormato.setColumnIdentifiers(new Object[]{"Etiqueta", "Linea", "Palabra"});
+                tablaFormato.addRow(new Object[]{especificaCache.getFormatEtiqueta() + " bits", especificaCache.getFormatLinea() + " bits", especificaCache.getFormatPalabra() + " bits"});
+                
+                tablaEjecu.setColumnCount(4);
+                tablaEjecu.setColumnIdentifiers(new Object[]{"Direcciones", "Etiqueta", "Linea", "Palabra"});
+                break;
+            case UtilCache.ASOCIATIVA:
+                tablaFormato.setColumnCount(2);
+                tablaFormato.setColumnIdentifiers(new Object[]{"Etiqueta", "Palabra"});
+                tablaFormato.addRow(new Object[]{especificaCache.getFormatEtiqueta() + " bits", especificaCache.getFormatPalabra() + " bits"});
+                
+                tablaEjecu.setColumnCount(3);
+                tablaEjecu.setColumnIdentifiers(new Object[]{"Direcciones", "Etiqueta", "Palabra"});
+                break;
+            case UtilCache.POR_CONJUNTO:
+                tablaFormato.setColumnCount(3);
+                tablaFormato.setColumnIdentifiers(new Object[]{"Etiqueta", "Conjunto", "Palabra"});
+                tablaFormato.addRow(new Object[]{especificaCache.getFormatEtiqueta() + " bits", especificaCache.getFormatConjunto() + " bits", especificaCache.getFormatPalabra() + " bits"});
+                
+                tablaEjecu.setColumnCount(4);
+                tablaEjecu.setColumnIdentifiers(new Object[]{"Direcciones", "Etiqueta", "Conjunto", "Palabra"});
+        }
         
         EstadoEspecificacion.setEspeciCacheEnHome(true); //Especificacion aplicada
     }
@@ -429,7 +469,8 @@ public class Home extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane4)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(64, 64, 64)
@@ -439,21 +480,18 @@ public class Home extends javax.swing.JPanel {
                         .addGap(10, 10, 10)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtAciertos)
-                            .addComponent(txtFallos, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 416, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtFallos, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(81, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(25, 25, 25)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(57, 57, 57)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel16)
                             .addComponent(txtAciertos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -461,7 +499,7 @@ public class Home extends javax.swing.JPanel {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel17)
                             .addComponent(txtFallos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

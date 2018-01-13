@@ -6,6 +6,10 @@
 package paneles;
 
 import configuraciones.EspecificacionCache;
+import configuraciones.EspecificacionRam;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 /**
  * Consultar los componentes y sus contenidos en las difirentes posiciones.
@@ -20,8 +24,32 @@ public class Componentes extends javax.swing.JPanel {
         initComponents();
     }
     
-    public void aplicarEspecificacion(EspecificacionCache especificaCache){
+    public void aplicarEspecificacionCache(EspecificacionCache especificaCache){
+        TableColumnModel columnaModel = new DefaultTableColumnModel();
         
+        for(int i = 0; i < especificaCache.getRam().getTamañoBloque() + 1; i++){
+            TableColumn columna = new TableColumn(i);
+            if(i == 0)
+                columna.setHeaderValue("Linea");
+            else
+                columna.setHeaderValue(i - 1);
+            columnaModel.addColumn(columna);
+        }
+        tlbCACHE.setColumnModel(columnaModel);
+    }
+    
+    public void aplicarEspecificacionRam(EspecificacionRam especificaRam){
+        TableColumnModel columnaModel = new DefaultTableColumnModel();
+        
+        for(int i = 0; i < 2; i++){
+            TableColumn columna = new TableColumn(i);
+            switch(i){
+                case 0: columna.setHeaderValue("Direccion"); break;
+                case 1: columna.setHeaderValue("Datos");
+            }
+            columnaModel.addColumn(columna);
+        }
+        tlbRAM.setColumnModel(columnaModel);
     }
 
     /**
