@@ -145,10 +145,12 @@ public class Simulador extends javax.swing.JFrame {
             EspecificacionRam espeRam = personalizar.getEspecificacionRam();
             
             if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnHome()){ //No ha sido aplicada en el panel HOME
-                inicio.aplicarEspecificacionCache(espeCache);
+                inicio.setEspecificaCache(espeCache);
+                inicio.aplicarEspecificacionCache();
             }
             if(espeRam != null && !EstadoEspecificacion.isEspeciRamEnHome()){ // No ha sido aplicada en el home la ram
-                inicio.aplicarEspecificacionRam(espeRam);
+                inicio.setEspeciRam(espeRam);
+                inicio.aplicarEspecificacionRam();
             }
         }
         
@@ -169,10 +171,12 @@ public class Simulador extends javax.swing.JFrame {
             EspecificacionRam espeRam = personalizar.getEspecificacionRam();
             
             if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnCompo()){ //No han sido aplicada en el panel de componentes
-                componentes.aplicarEspecificacionCache(espeCache);
+                componentes.setEspecificaCache(espeCache);
+                componentes.aplicarEspecificacionCache();
             }
             if(espeRam != null && !EstadoEspecificacion.isEspeciRamEnCompo()){
-                componentes.aplicarEspecificacionRam(espeRam);
+                componentes.setEspecificaRam(espeRam);
+                componentes.aplicarEspecificacionRam();
             }
         }
         

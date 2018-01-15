@@ -9,17 +9,23 @@ import cache.UtilCache;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
 import configuraciones.EstadoEspecificacion;
+import cpu.UtilDireccionamiento;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import utilidades.UnidadMedida;
+import utilidades.Validador;
 
 /**
  * Interacción con el proceso principal de peticiones del CPU.
+ *
  * @author Marvin
  */
 public class Home extends javax.swing.JPanel {
+
+    private EspecificacionRam especiRam;
+    private EspecificacionCache especificaCache;
 
     /**
      * Creates new form Home
@@ -27,95 +33,122 @@ public class Home extends javax.swing.JPanel {
     public Home() {
         initComponents();
     }
-    
-    public void aplicarEspecificacionRam(EspecificacionRam especiRam){
+
+    public void aplicarEspecificacionRam() {
         String aux;
         //Capacidad de la RAM
         aux = String.valueOf(especiRam.getCapacidadMP());
-        switch(especiRam.getUnidadMedidaMP()){
-            case UnidadMedida.KILO_BYTE: aux += " KiloBytes"; break;
-            case UnidadMedida.MEGA_BYTE: aux += " MegaBytes"; break;
-            case UnidadMedida.GIGA_BYTE: aux += " GigaBytes";
+        switch (especiRam.getUnidadMedidaMP()) {
+            case UnidadMedida.KILO_BYTE:
+                aux += " KiloBytes";
+                break;
+            case UnidadMedida.MEGA_BYTE:
+                aux += " MegaBytes";
+                break;
+            case UnidadMedida.GIGA_BYTE:
+                aux += " GigaBytes";
         }
         etiRam.setText("RAM: " + aux);
-        
+
         //Tamaño Bloque
         aux = String.valueOf(especiRam.getTamañoBloque());
-        switch(especiRam.getNivelDireccionable()){
-            case UnidadMedida.BYTE: aux += " Bytes"; break;
-            case UnidadMedida.PALABRA: aux += " Palabras";
+        switch (especiRam.getNivelDireccionable()) {
+            case UnidadMedida.BYTE:
+                aux += " Bytes";
+                break;
+            case UnidadMedida.PALABRA:
+                aux += " Palabras";
         }
         etiTamañoBloque.setText("Tamaño Bloque: " + aux);
-        
+
         //Total Bloques
         etiTotalBloques.setText("Total Bloques: " + especiRam.getTotalNumeroBloques());
-        
+
         //Maximo Direccionable
         etiMaxDireccionable.setText("Maximo Direccionable: " + especiRam.getMaxDireccionable() + " bits");
-        
+
         EstadoEspecificacion.setEspeciRamEnHome(true); //especificacion aplicada
     }
-    
-    public void aplicarEspecificacionCache(EspecificacionCache especificaCache){
+
+    public void aplicarEspecificacionCache() {
         String aux;
-        EspecificacionRam  especiRam = especificaCache.getRam();
-        
+        EspecificacionRam especiRam = especificaCache.getRam();
+
         //Capacidad Cache
         aux = String.valueOf(especificaCache.getCapacidadCache());
-        switch(especificaCache.getUnidadMedidaCache()){
-            case UnidadMedida.KILO_BYTE: aux += " KiloBytes"; break;
-            case UnidadMedida.MEGA_BYTE: aux += " MegaBytes"; break;
-            case UnidadMedida.GIGA_BYTE: aux += " GigaBytes";
+        switch (especificaCache.getUnidadMedidaCache()) {
+            case UnidadMedida.KILO_BYTE:
+                aux += " KiloBytes";
+                break;
+            case UnidadMedida.MEGA_BYTE:
+                aux += " MegaBytes";
+                break;
+            case UnidadMedida.GIGA_BYTE:
+                aux += " GigaBytes";
         }
         etiCache.setText("CACHE: " + aux);
-        
+
         //Correspondencia
-        switch(especificaCache.getFuncionCorrespondencia()){
-            case UtilCache.DIRECTA: aux = "Directa"; break;
-            case UtilCache.ASOCIATIVA: aux = "Asociativa"; break;
-            case UtilCache.POR_CONJUNTO: aux = "Por Conjuntos";
+        switch (especificaCache.getFuncionCorrespondencia()) {
+            case UtilCache.DIRECTA:
+                aux = "Directa";
+                break;
+            case UtilCache.ASOCIATIVA:
+                aux = "Asociativa";
+                break;
+            case UtilCache.POR_CONJUNTO:
+                aux = "Por Conjuntos";
         }
         etiCorrespondencia.setText("Correspondencia: " + aux);
-        
+
         //Tamaño de linea
         aux = String.valueOf(especiRam.getTamañoBloque());
-        switch(especiRam.getNivelDireccionable()){
-            case UnidadMedida.BYTE: aux += " Bytes"; break;
-            case UnidadMedida.PALABRA: aux += " Palabras";
+        switch (especiRam.getNivelDireccionable()) {
+            case UnidadMedida.BYTE:
+                aux += " Bytes";
+                break;
+            case UnidadMedida.PALABRA:
+                aux += " Palabras";
         }
         etiTamLinea.setText("Tamaño de Linea: " + aux);
-        
+
         //Numero de Lineas
         etiNumLineas.setText("Numero de Lineas: " + especificaCache.getNumTotalLineas());
-        
+
         //Tamaño de direcciones
         aux = String.valueOf(especificaCache.getRam().getMaxDireccionable());
         etiTamDirecciones.setText("Tamaño direcciones: " + aux + " bits");
-        
+
         //Reemplazo
-        switch(especificaCache.getAlgoReemplazo()){
-            case UtilCache.LRU: aux = "LRU"; break;
-            case UtilCache.FIFO: aux = "FIFO"; break;
-            case UtilCache.ALEATORIO: aux = "Aleatorio";
+        switch (especificaCache.getAlgoReemplazo()) {
+            case UtilCache.LRU:
+                aux = "LRU";
+                break;
+            case UtilCache.FIFO:
+                aux = "FIFO";
+                break;
+            case UtilCache.ALEATORIO:
+                aux = "Aleatorio";
         }
         etiReemplazo.setText("Reemplazo: " + aux);
-        
+
         //Creacion de columnas del Formato direcciones en CACHE
-        
         DefaultTableModel tablaFormato = (DefaultTableModel) tlbFormatoCache.getModel();
         DefaultTableModel tablaEjecu = (DefaultTableModel) tlbEjecucion.getModel();
-        
-        for(int i=tablaFormato.getRowCount()-1; i>=0; i--)
+
+        for (int i = tablaFormato.getRowCount() - 1; i >= 0; i--) {
             tablaFormato.removeRow(i);
-        for(int i=tablaEjecu.getRowCount()-1; i>=0; i--)
+        }
+        for (int i = tablaEjecu.getRowCount() - 1; i >= 0; i--) {
             tablaEjecu.removeRow(i);
-        
-        switch(especificaCache.getFuncionCorrespondencia()){
+        }
+
+        switch (especificaCache.getFuncionCorrespondencia()) {
             case UtilCache.DIRECTA:
                 tablaFormato.setColumnCount(3);
                 tablaFormato.setColumnIdentifiers(new Object[]{"Etiqueta", "Linea", "Palabra"});
                 tablaFormato.addRow(new Object[]{especificaCache.getFormatEtiqueta() + " bits", especificaCache.getFormatLinea() + " bits", especificaCache.getFormatPalabra() + " bits"});
-                
+
                 tablaEjecu.setColumnCount(4);
                 tablaEjecu.setColumnIdentifiers(new Object[]{"Direcciones", "Etiqueta", "Linea", "Palabra"});
                 break;
@@ -123,7 +156,7 @@ public class Home extends javax.swing.JPanel {
                 tablaFormato.setColumnCount(2);
                 tablaFormato.setColumnIdentifiers(new Object[]{"Etiqueta", "Palabra"});
                 tablaFormato.addRow(new Object[]{especificaCache.getFormatEtiqueta() + " bits", especificaCache.getFormatPalabra() + " bits"});
-                
+
                 tablaEjecu.setColumnCount(3);
                 tablaEjecu.setColumnIdentifiers(new Object[]{"Direcciones", "Etiqueta", "Palabra"});
                 break;
@@ -131,12 +164,28 @@ public class Home extends javax.swing.JPanel {
                 tablaFormato.setColumnCount(3);
                 tablaFormato.setColumnIdentifiers(new Object[]{"Etiqueta", "Conjunto", "Palabra"});
                 tablaFormato.addRow(new Object[]{especificaCache.getFormatEtiqueta() + " bits", especificaCache.getFormatConjunto() + " bits", especificaCache.getFormatPalabra() + " bits"});
-                
+
                 tablaEjecu.setColumnCount(4);
                 tablaEjecu.setColumnIdentifiers(new Object[]{"Direcciones", "Etiqueta", "Conjunto", "Palabra"});
         }
-        
+
         EstadoEspecificacion.setEspeciCacheEnHome(true); //Especificacion aplicada
+    }
+
+    public EspecificacionRam getEspeciRam() {
+        return especiRam;
+    }
+
+    public void setEspeciRam(EspecificacionRam especiRam) {
+        this.especiRam = especiRam;
+    }
+
+    public EspecificacionCache getEspecificaCache() {
+        return especificaCache;
+    }
+
+    public void setEspecificaCache(EspecificacionCache especificaCache) {
+        this.especificaCache = especificaCache;
     }
 
     /**
@@ -167,11 +216,11 @@ public class Home extends javax.swing.JPanel {
         comboTipoOperacion = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
         comboDireccionamiento = new javax.swing.JComboBox<>();
-        jLabel13 = new javax.swing.JLabel();
+        etiCampoDireccion = new javax.swing.JLabel();
         txtCampoDireccion = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
+        etiCampoRegistro = new javax.swing.JLabel();
         txtCampoRegistro = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
+        etiDatoEscribir = new javax.swing.JLabel();
         txtDatoEscribir = new javax.swing.JTextField();
         btnAgregarPeticion = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -301,23 +350,44 @@ public class Home extends javax.swing.JPanel {
 
         comboTipoOperacion.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboTipoOperacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Lectura", "Escritura" }));
+        comboTipoOperacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboTipoOperacionActionPerformed(evt);
+            }
+        });
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel12.setText("Direccionamiento:");
 
         comboDireccionamiento.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboDireccionamiento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Directo", "Indirecto con Registro", "Desplazamieto Relativo", "Registro Base", "Indexado" }));
+        comboDireccionamiento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboDireccionamientoActionPerformed(evt);
+            }
+        });
 
-        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel13.setText("Campo de Direccion:");
+        etiCampoDireccion.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiCampoDireccion.setText("Campo de Direccion:");
 
-        jLabel14.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel14.setText("Campo de Registro:");
+        etiCampoRegistro.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiCampoRegistro.setText("Campo de Registro:");
+        etiCampoRegistro.setEnabled(false);
 
-        jLabel15.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel15.setText("Dato a escribir:");
+        txtCampoRegistro.setEnabled(false);
+
+        etiDatoEscribir.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiDatoEscribir.setText("Dato a escribir:");
+        etiDatoEscribir.setEnabled(false);
+
+        txtDatoEscribir.setEnabled(false);
 
         btnAgregarPeticion.setText("Agregar Peticion");
+        btnAgregarPeticion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarPeticionActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -338,15 +408,15 @@ public class Home extends javax.swing.JPanel {
                             .addComponent(comboDireccionamiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel15)
+                                .addComponent(etiDatoEscribir)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtDatoEscribir, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel14)
+                                .addComponent(etiCampoRegistro)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtCampoRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel13)
+                                .addComponent(etiCampoDireccion)
                                 .addGap(18, 18, 18)
                                 .addComponent(txtCampoDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -364,15 +434,15 @@ public class Home extends javax.swing.JPanel {
                     .addComponent(comboDireccionamiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel13)
+                    .addComponent(etiCampoDireccion)
                     .addComponent(txtCampoDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
+                    .addComponent(etiCampoRegistro)
                     .addComponent(txtCampoRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel15)
+                    .addComponent(etiDatoEscribir)
                     .addComponent(txtDatoEscribir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnAgregarPeticion)
@@ -385,14 +455,14 @@ public class Home extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Direccion", "Direccionamiento", "Tipo", "Dato"
+                "Dir.", "Reg.", "Direccionamiento", "Tipo", "Dato"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, true, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -515,10 +585,10 @@ public class Home extends javax.swing.JPanel {
                         .addComponent(btnProcesar)
                         .addGap(18, 18, 18)
                         .addComponent(btnEliminar)
-                        .addGap(0, 43, Short.MAX_VALUE))
+                        .addGap(0, 51, Short.MAX_VALUE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -541,6 +611,57 @@ public class Home extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnAgregarPeticionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarPeticionActionPerformed
+        int tipoOperacion = comboTipoOperacion.getSelectedIndex();
+        int direccionamiento = comboDireccionamiento.getSelectedIndex();
+        String direc = txtCampoDireccion.getText();
+        String reg = txtCampoRegistro.getText();
+        String dato = txtDatoEscribir.getText();
+        DefaultTableModel petiModelo = (DefaultTableModel) tlbPeticiones.getModel();
+        
+        switch(tipoOperacion){
+            case UtilDireccionamiento.LECTURA:
+                if(direccionamiento == UtilDireccionamiento.DIRECTO && !direc.isEmpty())
+                    petiModelo.addRow(new Object[]{direc,"",comboDireccionamiento.getSelectedItem(),comboTipoOperacion.getSelectedItem()});
+        }
+        
+
+    }//GEN-LAST:event_btnAgregarPeticionActionPerformed
+
+    private void comboTipoOperacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboTipoOperacionActionPerformed
+        if (comboTipoOperacion.getSelectedIndex() == UtilDireccionamiento.LECTURA) {
+            etiDatoEscribir.setEnabled(false);
+            txtDatoEscribir.setEnabled(false);
+        } else {
+            etiDatoEscribir.setEnabled(true);
+            txtDatoEscribir.setEnabled(true);
+        }
+    }//GEN-LAST:event_comboTipoOperacionActionPerformed
+
+    private void comboDireccionamientoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboDireccionamientoActionPerformed
+        switch (comboDireccionamiento.getSelectedIndex()) {
+            case UtilDireccionamiento.DIRECTO:
+                etiCampoDireccion.setEnabled(true);
+                txtCampoDireccion.setEnabled(true);
+                etiCampoRegistro.setEnabled(false);
+                txtCampoRegistro.setEnabled(false);
+                break;
+            case UtilDireccionamiento.INDIRECTO_REGISTRO:
+                etiCampoRegistro.setEnabled(true);
+                txtCampoRegistro.setEnabled(true);
+                etiCampoDireccion.setEnabled(false);
+                txtCampoDireccion.setEnabled(false);
+                break;
+            case UtilDireccionamiento.REGISTRO_BASE:
+            case UtilDireccionamiento.DESPLAZAMIENTO_RELATIVO:
+            case UtilDireccionamiento.INDEXADO:
+                etiCampoDireccion.setEnabled(true);
+                txtCampoDireccion.setEnabled(true);
+                etiCampoRegistro.setEnabled(true);
+                txtCampoRegistro.setEnabled(true);
+        }
+    }//GEN-LAST:event_comboDireccionamientoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarPeticion;
@@ -549,7 +670,10 @@ public class Home extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> comboDireccionamiento;
     private javax.swing.JComboBox<String> comboTipoOperacion;
     private javax.swing.JLabel etiCache;
+    private javax.swing.JLabel etiCampoDireccion;
+    private javax.swing.JLabel etiCampoRegistro;
     private javax.swing.JLabel etiCorrespondencia;
+    private javax.swing.JLabel etiDatoEscribir;
     private javax.swing.JLabel etiMaxDireccionable;
     private javax.swing.JLabel etiNumLineas;
     private javax.swing.JLabel etiRam;
@@ -561,9 +685,6 @@ public class Home extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JPanel jPanel1;

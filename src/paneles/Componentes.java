@@ -17,6 +17,9 @@ import javax.swing.table.TableColumnModel;
  */
 public class Componentes extends javax.swing.JPanel {
 
+    private EspecificacionCache especificaCache;
+    private EspecificacionRam especificaRam;
+    
     /**
      * Creates new form Componentes
      */
@@ -24,7 +27,7 @@ public class Componentes extends javax.swing.JPanel {
         initComponents();
     }
     
-    public void aplicarEspecificacionCache(EspecificacionCache especificaCache){
+    public void aplicarEspecificacionCache(){
         TableColumnModel columnaModel = new DefaultTableColumnModel();
         
         for(int i = 0; i < especificaCache.getRam().getTamañoBloque() + 1; i++){
@@ -38,7 +41,7 @@ public class Componentes extends javax.swing.JPanel {
         tlbCACHE.setColumnModel(columnaModel);
     }
     
-    public void aplicarEspecificacionRam(EspecificacionRam especificaRam){
+    public void aplicarEspecificacionRam(){
         TableColumnModel columnaModel = new DefaultTableColumnModel();
         
         for(int i = 0; i < 2; i++){
@@ -52,6 +55,23 @@ public class Componentes extends javax.swing.JPanel {
         tlbRAM.setColumnModel(columnaModel);
     }
 
+    public EspecificacionCache getEspecificaCache() {
+        return especificaCache;
+    }
+
+    public void setEspecificaCache(EspecificacionCache especificaCache) {
+        this.especificaCache = especificaCache;
+    }
+
+    public EspecificacionRam getEspecificaRam() {
+        return especificaRam;
+    }
+
+    public void setEspecificaRam(EspecificacionRam especificaRam) {
+        this.especificaRam = especificaRam;
+    }
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
