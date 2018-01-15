@@ -10,6 +10,8 @@ import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
 import configuraciones.EstadoEspecificacion;
 import cpu.UtilDireccionamiento;
+import java.io.ObjectOutput;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -480,6 +482,11 @@ public class Home extends javax.swing.JPanel {
 
         btnEliminar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Ejecución"));
 
@@ -618,13 +625,48 @@ public class Home extends javax.swing.JPanel {
         String reg = txtCampoRegistro.getText();
         String dato = txtDatoEscribir.getText();
         DefaultTableModel petiModelo = (DefaultTableModel) tlbPeticiones.getModel();
-        
-        switch(tipoOperacion){
+        String mensaje = "";
+
+        switch (tipoOperacion) {
             case UtilDireccionamiento.LECTURA:
-                if(direccionamiento == UtilDireccionamiento.DIRECTO && !direc.isEmpty())
-                    petiModelo.addRow(new Object[]{direc,"",comboDireccionamiento.getSelectedItem(),comboTipoOperacion.getSelectedItem()});
+                if (direccionamiento == UtilDireccionamiento.DIRECTO && !direc.isEmpty()) {
+                    petiModelo.addRow(new Object[]{direc, "", comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
+                } else if (direccionamiento == UtilDireccionamiento.INDIRECTO_REGISTRO && !reg.isEmpty()) {
+                    petiModelo.addRow(new Object[]{"", reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
+                } else if (direccionamiento == UtilDireccionamiento.DESPLAZAMIENTO_RELATIVO && !direc.isEmpty() && !reg.isEmpty()) {
+                    petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
+                } else if (direccionamiento == UtilDireccionamiento.REGISTRO_BASE && !direc.isEmpty() && !reg.isEmpty()) {
+                    petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
+                } else if (direccionamiento == UtilDireccionamiento.INDEXADO && !direc.isEmpty() && !reg.isEmpty()) {
+                    petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
+                } else {
+                    mensaje = "Debe de completar todos los campos de texto disponibles para editar";
+                }
+                break;
+            case UtilDireccionamiento.ESCRITURA:
+                if (!dato.isEmpty()) {
+                    if (direccionamiento == UtilDireccionamiento.DIRECTO && !direc.isEmpty()) {
+                        petiModelo.addRow(new Object[]{direc, "", comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
+                    } else if (direccionamiento == UtilDireccionamiento.INDIRECTO_REGISTRO && !reg.isEmpty()) {
+                        petiModelo.addRow(new Object[]{"", reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
+                    } else if (direccionamiento == UtilDireccionamiento.DESPLAZAMIENTO_RELATIVO && !direc.isEmpty() && !reg.isEmpty()) {
+                        petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
+                    } else if (direccionamiento == UtilDireccionamiento.REGISTRO_BASE && !direc.isEmpty() && !reg.isEmpty()) {
+                        petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
+                    } else if (direccionamiento == UtilDireccionamiento.INDEXADO && !direc.isEmpty() && !reg.isEmpty()) {
+                        petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
+                    } else {
+                        mensaje = "Debe de completar todos los campos de texto disponibles para editar";
+                    }
+                }else
+                    mensaje = "Ingrese el valor a escribir en el campo correspondiente";
+
+                break;
         }
-        
+        if (!mensaje.isEmpty()) {
+            JOptionPane.showMessageDialog(this, mensaje, "Advertencia!", JOptionPane.WARNING_MESSAGE);
+        }
+
 
     }//GEN-LAST:event_btnAgregarPeticionActionPerformed
 
@@ -661,6 +703,17 @@ public class Home extends javax.swing.JPanel {
                 txtCampoRegistro.setEnabled(true);
         }
     }//GEN-LAST:event_comboDireccionamientoActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        DefaultTableModel tabla = (DefaultTableModel) tlbPeticiones.getModel();
+        int[] filas = tlbPeticiones.getSelectedRows();
+        for (int fila : filas) {
+            for (int i = 0; i < filas.length; i++) {
+                filas[i]--;
+            }
+            tabla.removeRow(fila);
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
