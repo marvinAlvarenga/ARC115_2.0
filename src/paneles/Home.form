@@ -412,6 +412,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtCampoDireccion">
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtCampoDireccionKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="etiCampoRegistro">
           <Properties>
@@ -426,6 +429,9 @@
           <Properties>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtCampoRegistroKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="etiDatoEscribir">
           <Properties>
@@ -440,6 +446,9 @@
           <Properties>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtDatoEscribirKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnAgregarPeticion">
           <Properties>

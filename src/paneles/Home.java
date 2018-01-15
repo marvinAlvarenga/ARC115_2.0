@@ -9,13 +9,12 @@ import cache.UtilCache;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
 import configuraciones.EstadoEspecificacion;
+import cpu.Peticion;
 import cpu.UtilDireccionamiento;
-import java.io.ObjectOutput;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import utilidades.UnidadMedida;
 import utilidades.Validador;
 
@@ -28,6 +27,8 @@ public class Home extends javax.swing.JPanel {
 
     private EspecificacionRam especiRam;
     private EspecificacionCache especificaCache;
+    
+    static List<Peticion> listaPeticiones = new ArrayList<>();
 
     /**
      * Creates new form Home
@@ -372,17 +373,33 @@ public class Home extends javax.swing.JPanel {
         etiCampoDireccion.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         etiCampoDireccion.setText("Campo de Direccion:");
 
+        txtCampoDireccion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCampoDireccionKeyTyped(evt);
+            }
+        });
+
         etiCampoRegistro.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         etiCampoRegistro.setText("Campo de Registro:");
         etiCampoRegistro.setEnabled(false);
 
         txtCampoRegistro.setEnabled(false);
+        txtCampoRegistro.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCampoRegistroKeyTyped(evt);
+            }
+        });
 
         etiDatoEscribir.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         etiDatoEscribir.setText("Dato a escribir:");
         etiDatoEscribir.setEnabled(false);
 
         txtDatoEscribir.setEnabled(false);
+        txtDatoEscribir.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtDatoEscribirKeyTyped(evt);
+            }
+        });
 
         btnAgregarPeticion.setText("Agregar Peticion");
         btnAgregarPeticion.addActionListener(new java.awt.event.ActionListener() {
@@ -626,18 +643,29 @@ public class Home extends javax.swing.JPanel {
         String dato = txtDatoEscribir.getText();
         DefaultTableModel petiModelo = (DefaultTableModel) tlbPeticiones.getModel();
         String mensaje = "";
+        Peticion peti = new Peticion();
+        peti.setMetodoDireccion(direccionamiento);
+        peti.setTipoPeticion(tipoOperacion);
 
         switch (tipoOperacion) {
             case UtilDireccionamiento.LECTURA:
                 if (direccionamiento == UtilDireccionamiento.DIRECTO && !direc.isEmpty()) {
+                    peti.setCampoDireccion(direc);
                     petiModelo.addRow(new Object[]{direc, "", comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
                 } else if (direccionamiento == UtilDireccionamiento.INDIRECTO_REGISTRO && !reg.isEmpty()) {
+                    peti.setCampoRegistro(reg);
                     petiModelo.addRow(new Object[]{"", reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
                 } else if (direccionamiento == UtilDireccionamiento.DESPLAZAMIENTO_RELATIVO && !direc.isEmpty() && !reg.isEmpty()) {
+                    peti.setCampoDireccion(direc);
+                    peti.setCampoRegistro(reg);
                     petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
                 } else if (direccionamiento == UtilDireccionamiento.REGISTRO_BASE && !direc.isEmpty() && !reg.isEmpty()) {
+                    peti.setCampoDireccion(direc);
+                    peti.setCampoRegistro(reg);
                     petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
                 } else if (direccionamiento == UtilDireccionamiento.INDEXADO && !direc.isEmpty() && !reg.isEmpty()) {
+                    peti.setCampoDireccion(direc);
+                    peti.setCampoRegistro(reg);
                     petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem()});
                 } else {
                     mensaje = "Debe de completar todos los campos de texto disponibles para editar";
@@ -646,14 +674,27 @@ public class Home extends javax.swing.JPanel {
             case UtilDireccionamiento.ESCRITURA:
                 if (!dato.isEmpty()) {
                     if (direccionamiento == UtilDireccionamiento.DIRECTO && !direc.isEmpty()) {
+                        peti.setCampoDireccion(direc);
+                        peti.setCampoDatoEscribir(dato);
                         petiModelo.addRow(new Object[]{direc, "", comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
                     } else if (direccionamiento == UtilDireccionamiento.INDIRECTO_REGISTRO && !reg.isEmpty()) {
+                        peti.setCampoRegistro(reg);
+                        peti.setCampoDatoEscribir(dato);
                         petiModelo.addRow(new Object[]{"", reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
                     } else if (direccionamiento == UtilDireccionamiento.DESPLAZAMIENTO_RELATIVO && !direc.isEmpty() && !reg.isEmpty()) {
+                        peti.setCampoDireccion(direc);
+                        peti.setCampoRegistro(reg);
+                        peti.setCampoDatoEscribir(dato);
                         petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
                     } else if (direccionamiento == UtilDireccionamiento.REGISTRO_BASE && !direc.isEmpty() && !reg.isEmpty()) {
+                        peti.setCampoDireccion(direc);
+                        peti.setCampoRegistro(reg);
+                        peti.setCampoDatoEscribir(dato);
                         petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
                     } else if (direccionamiento == UtilDireccionamiento.INDEXADO && !direc.isEmpty() && !reg.isEmpty()) {
+                        peti.setCampoDireccion(direc);
+                        peti.setCampoRegistro(reg);
+                        peti.setCampoDatoEscribir(dato);
                         petiModelo.addRow(new Object[]{direc, reg, comboDireccionamiento.getSelectedItem(), comboTipoOperacion.getSelectedItem(), dato});
                     } else {
                         mensaje = "Debe de completar todos los campos de texto disponibles para editar";
@@ -665,6 +706,11 @@ public class Home extends javax.swing.JPanel {
         }
         if (!mensaje.isEmpty()) {
             JOptionPane.showMessageDialog(this, mensaje, "Advertencia!", JOptionPane.WARNING_MESSAGE);
+        }else{
+            listaPeticiones.add(peti);
+            txtCampoDireccion.setText("");
+            txtCampoRegistro.setText("");
+            txtDatoEscribir.setText("");
         }
 
 
@@ -712,8 +758,35 @@ public class Home extends javax.swing.JPanel {
                 filas[i]--;
             }
             tabla.removeRow(fila);
+            listaPeticiones.remove(fila);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void txtCampoDireccionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCampoDireccionKeyTyped
+        if(especiRam != null)
+            Validador.validarHexaYDirsAdmitidas(evt, txtCampoDireccion.getText().length(), especiRam.getMaxDireccionable());
+        else
+            evt.consume();
+    }//GEN-LAST:event_txtCampoDireccionKeyTyped
+
+    private void txtCampoRegistroKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCampoRegistroKeyTyped
+        if(especiRam != null)
+            Validador.validarHexaYDirsAdmitidas(evt, txtCampoRegistro.getText().length(), especiRam.getMaxDireccionable());
+        else
+            evt.consume();
+    }//GEN-LAST:event_txtCampoRegistroKeyTyped
+
+    private void txtDatoEscribirKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoEscribirKeyTyped
+        if(especiRam != null){
+            if(especiRam.getNivelDireccionable() == UnidadMedida.BYTE)
+                Validador.validarHexaYDatosAdmitidos(evt, txtDatoEscribir.getText().length(), 1);
+            else
+                Validador.validarHexaYDatosAdmitidos(evt, txtDatoEscribir.getText().length(), especiRam.getTamañoPalabra());
+        }else{
+            evt.consume();
+        }
+        
+    }//GEN-LAST:event_txtDatoEscribirKeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
