@@ -431,30 +431,60 @@ public class Personalizacion extends javax.swing.JPanel {
             } else if (Validador.esPotenciaDeDos(capaCache) < 0) {
                 mensaje = "La capacidad de CACHE debe de ser potencia de 2";
             } else {
-                auxRam = new EspecificacionRam(Integer.parseInt(capaRam),
-                        comboBytesRam.getSelectedIndex(),
-                        comboDireccionable.getSelectedIndex(),
-                        Integer.parseInt(tamBloques), comboLlenadoRam.getSelectedIndex());
+                // Comparar las capacidades de RAM  y  CACHE
+                long capacidadRAM = 0;
+                switch (comboBytesRam.getSelectedIndex()) {
+                    case UnidadMedida.KILO_BYTE:
+                        capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 10);
+                        break;
+                    case UnidadMedida.MEGA_BYTE:
+                        capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 20);
+                        break;
+                    case UnidadMedida.GIGA_BYTE:
+                        capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 30);
+                        break;
+                }
+                long capacidadCACHE = 0;
+                switch (comboBytesCache.getSelectedIndex()) {
+                    case UnidadMedida.KILO_BYTE:
+                        capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 10);
+                        break;
+                    case UnidadMedida.MEGA_BYTE:
+                        capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 20);
+                        break;
+                    case UnidadMedida.GIGA_BYTE:
+                        capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 30);
+                        break;
+                }
+                if (capacidadRAM > capacidadCACHE) {
+                    auxRam = new EspecificacionRam(Integer.parseInt(capaRam),
+                            comboBytesRam.getSelectedIndex(),
+                            comboDireccionable.getSelectedIndex(),
+                            Integer.parseInt(tamBloques), comboLlenadoRam.getSelectedIndex());
 
-                if (direccionableRam == UnidadMedida.PALABRA && !tamPalabra.isEmpty() && Validador.esPotenciaDeDos(tamPalabra) >= 0) { //Direccionamiento por palabra
-                    auxRam.setTamañoPalabra(Integer.parseInt(tamPalabra));
-                } else if (direccionableRam == UnidadMedida.PALABRA) {
-                    mensaje = "El tamaño de palabra no es valido.";
+                    if (direccionableRam == UnidadMedida.PALABRA && !tamPalabra.isEmpty() && Validador.esPotenciaDeDos(tamPalabra) >= 0) { //Direccionamiento por palabra
+                        auxRam.setTamañoPalabra(Integer.parseInt(tamPalabra));
+                    } else if (direccionableRam == UnidadMedida.PALABRA) {
+                        mensaje = "El tamaño de palabra no es valido.";
+                    }
+
+                    auxRam.realizarCalculos();
+
+                    auxCache = new EspecificacionCache(Integer.parseInt(capaCache),
+                            comboBytesCache.getSelectedIndex(), comboCorrespondencia.getSelectedIndex(),
+                            comboAlgoReemplazo.getSelectedIndex(), auxRam);
+
+                    if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO && !numLineasConjunto.isEmpty() && Integer.parseInt(numLineasConjunto) > 1) {
+                        auxCache.setCantidadLineasPorConjunto(Integer.parseInt(numLineasConjunto));
+                    } else if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO) {
+                        mensaje = "Numero de lineas para el conjunto debe ser mayor que 1.";
+                    }
+
+                    auxCache.realizarCalculos();
+                }else{
+                    mensaje = "La capacidad de RAM debe ser mayor a la de la CACHE";
                 }
 
-                auxRam.realizarCalculos();
-                
-                auxCache = new EspecificacionCache(Integer.parseInt(capaCache),
-                        comboBytesCache.getSelectedIndex(), comboCorrespondencia.getSelectedIndex(),
-                        comboAlgoReemplazo.getSelectedIndex(), auxRam);
-                
-                if(comboCorrespondencia.getSelectedIndex()==UtilCache.POR_CONJUNTO && !numLineasConjunto.isEmpty() && Integer.parseInt(numLineasConjunto)>1){
-                    auxCache.setCantidadLineasPorConjunto(Integer.parseInt(numLineasConjunto));
-                }else if(comboCorrespondencia.getSelectedIndex()==UtilCache.POR_CONJUNTO){
-                    mensaje = "Numero de lineas para el conjunto debe ser mayor que 1.";
-                }
-                
-                auxCache.realizarCalculos();
             }
 
         } else {
@@ -509,110 +539,137 @@ public class Personalizacion extends javax.swing.JPanel {
     }//GEN-LAST:event_txtLineasConjuntoKeyTyped
 
     private void comboCorrespondenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboCorrespondenciaActionPerformed
-        if(comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO){//Asociativa por conjunto
+        if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO) {//Asociativa por conjunto
             etiLineas.setEnabled(true);
             etiNumLineasConjunto.setEnabled(true);
             txtLineasConjunto.setEditable(true);
-        }else{
+        } else {
             etiLineas.setEnabled(false);
             etiNumLineasConjunto.setEnabled(false);
             txtLineasConjunto.setEditable(false);
         }
-        
-        if(comboCorrespondencia.getSelectedIndex() == UtilCache.DIRECTA){
+
+        if (comboCorrespondencia.getSelectedIndex() == UtilCache.DIRECTA) {
             etiReemplazo.setEnabled(false);
             comboAlgoReemplazo.setEnabled(false);
-        }else{
+        } else {
             etiReemplazo.setEnabled(true);
             comboAlgoReemplazo.setEnabled(true);
         }
     }//GEN-LAST:event_comboCorrespondenciaActionPerformed
 
-    private void pintarDetallesEnTabla(){
+    private void pintarDetallesEnTabla() {
         String aux;
-        
+
         //Limpiar tabla de detalles
-        DefaultTableModel tablaDetalles = (DefaultTableModel)tlbDetallesConfig.getModel();
-        for(int i=tablaDetalles.getRowCount()-1; i>=0; i--)
+        DefaultTableModel tablaDetalles = (DefaultTableModel) tlbDetallesConfig.getModel();
+        for (int i = tablaDetalles.getRowCount() - 1; i >= 0; i--) {
             tablaDetalles.removeRow(i);
-        
+        }
+
         tablaDetalles.addRow(new Object[]{"---------RAM-----------"});
 
         //Capacidad de la RAM
         aux = String.valueOf(especificacionRam.getCapacidadMP());
-        switch(especificacionRam.getUnidadMedidaMP()){
-            case UnidadMedida.KILO_BYTE: aux += " KiloBytes"; break;
-            case UnidadMedida.MEGA_BYTE: aux += " MegaBytes"; break;
-            case UnidadMedida.GIGA_BYTE: aux += " GigaBytes";
+        switch (especificacionRam.getUnidadMedidaMP()) {
+            case UnidadMedida.KILO_BYTE:
+                aux += " KiloBytes";
+                break;
+            case UnidadMedida.MEGA_BYTE:
+                aux += " MegaBytes";
+                break;
+            case UnidadMedida.GIGA_BYTE:
+                aux += " GigaBytes";
         }
         tablaDetalles.addRow(new Object[]{"Capacidad RAM: " + aux});
-        
+
         //Tamaño de bloque RAM
-        aux =  String.valueOf(especificacionRam.getTamañoBloque());
-        switch(especificacionRam.getNivelDireccionable()){
-            case UnidadMedida.BYTE: aux += " Bytes"; break;
-            case UnidadMedida.PALABRA: aux += " Palabras";
+        aux = String.valueOf(especificacionRam.getTamañoBloque());
+        switch (especificacionRam.getNivelDireccionable()) {
+            case UnidadMedida.BYTE:
+                aux += " Bytes";
+                break;
+            case UnidadMedida.PALABRA:
+                aux += " Palabras";
         }
         tablaDetalles.addRow(new Object[]{"Tamaño de bloques: " + aux});
-        
+
         //Total de numero de bloques
         aux = String.valueOf(especificacionRam.getTotalNumeroBloques());
         tablaDetalles.addRow(new Object[]{"Num. Tot. de bloques: " + aux});
-        
+
         //Maximo direccionable
         aux = String.valueOf(especificacionRam.getMaxDireccionable());
         tablaDetalles.addRow(new Object[]{"Máximo direccionable: " + aux + " bits"});
-        
+
         tablaDetalles.addRow(new Object[]{"--------CACHE-----------"});
-        
+
         //Capacidad de la cache
         aux = String.valueOf(especificacionCache.getCapacidadCache());
-        switch(especificacionCache.getUnidadMedidaCache()){
-            case UnidadMedida.KILO_BYTE: aux += " KiloBytes"; break;
-            case UnidadMedida.MEGA_BYTE: aux += " MegaBytes"; break;
-            case UnidadMedida.GIGA_BYTE: aux += " GigaBytes";
+        switch (especificacionCache.getUnidadMedidaCache()) {
+            case UnidadMedida.KILO_BYTE:
+                aux += " KiloBytes";
+                break;
+            case UnidadMedida.MEGA_BYTE:
+                aux += " MegaBytes";
+                break;
+            case UnidadMedida.GIGA_BYTE:
+                aux += " GigaBytes";
         }
         tablaDetalles.addRow(new Object[]{"Capacidad Cache: " + aux});
-        
+
         //Funcion de correspondencia
-        switch(especificacionCache.getFuncionCorrespondencia()){
-            case UtilCache.DIRECTA: aux = "Directa"; break;
-            case UtilCache.ASOCIATIVA: aux = "Totalmente Asociativa"; break;
-            case UtilCache.POR_CONJUNTO: aux = "Asociativa por conjunto";
+        switch (especificacionCache.getFuncionCorrespondencia()) {
+            case UtilCache.DIRECTA:
+                aux = "Directa";
+                break;
+            case UtilCache.ASOCIATIVA:
+                aux = "Totalmente Asociativa";
+                break;
+            case UtilCache.POR_CONJUNTO:
+                aux = "Asociativa por conjunto";
         }
         tablaDetalles.addRow(new Object[]{"Correspondencia: " + aux});
-        
+
         //Algoritmo de reemplazo
-        switch(especificacionCache.getAlgoReemplazo()){
-            case UtilCache.LRU: aux = "LRU"; break;
-            case UtilCache.FIFO: aux = "FIFO"; break;
-            case UtilCache.ALEATORIO: aux = "Aleatorio";
+        switch (especificacionCache.getAlgoReemplazo()) {
+            case UtilCache.LRU:
+                aux = "LRU";
+                break;
+            case UtilCache.FIFO:
+                aux = "FIFO";
+                break;
+            case UtilCache.ALEATORIO:
+                aux = "Aleatorio";
         }
         tablaDetalles.addRow(new Object[]{"Algorimo reemplazo: " + aux});
-        
+
         //Tamaño de linea cache
         aux = String.valueOf(especificacionCache.getRam().getTamañoBloque());
-        switch(especificacionCache.getRam().getNivelDireccionable()){
-            case UnidadMedida.BYTE: aux += " Bytes"; break;
-            case UnidadMedida.PALABRA: aux += " Palabras";
+        switch (especificacionCache.getRam().getNivelDireccionable()) {
+            case UnidadMedida.BYTE:
+                aux += " Bytes";
+                break;
+            case UnidadMedida.PALABRA:
+                aux += " Palabras";
         }
         tablaDetalles.addRow(new Object[]{"Tamaño de linea: " + aux});
-        
+
         //Numero de lineas
         aux = String.valueOf(especificacionCache.getNumTotalLineas());
         tablaDetalles.addRow(new Object[]{"Num. Tot. de lineas: " + aux});
-        
+
         //Tamaño de direcciones
         aux = String.valueOf(especificacionCache.getRam().getMaxDireccionable());
         tablaDetalles.addRow(new Object[]{"Tamaño direcciones: " + aux + " bits"});
-        
+
         //Numero de Lineas por conjunto
-        if(especificacionCache.getFuncionCorrespondencia() == UtilCache.POR_CONJUNTO){
+        if (especificacionCache.getFuncionCorrespondencia() == UtilCache.POR_CONJUNTO) {
             tablaDetalles.addRow(new Object[]{"Conjuntos de: " + especificacionCache.getCantidadLineasPorConjunto() + " lineas"});
-            tablaDetalles.addRow(new Object[]{"Num. Tot. de conjuntos: " + especificacionCache.getCantidadDeConjuntos()+ " conjuntos"});
+            tablaDetalles.addRow(new Object[]{"Num. Tot. de conjuntos: " + especificacionCache.getCantidadDeConjuntos() + " conjuntos"});
         }
     }
-    
+
     public EspecificacionCache getEspecificacionCache() {
         return especificacionCache;
     }

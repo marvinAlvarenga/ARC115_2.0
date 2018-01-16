@@ -111,6 +111,7 @@ public class Componentes extends javax.swing.JPanel {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Cache"));
 
+        tlbCACHE.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tlbCACHE.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -140,6 +141,7 @@ public class Componentes extends javax.swing.JPanel {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("RAM"));
 
+        tlbRAM.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tlbRAM.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 

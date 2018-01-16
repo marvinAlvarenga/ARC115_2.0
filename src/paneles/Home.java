@@ -91,6 +91,14 @@ public class Home extends javax.swing.JPanel {
                     RAM.add(dato);
                 }
                 break;
+            case UtilCache.LLENADO_ALEAT:
+                Home.RAM = null;
+                Home.RAM = new ArrayList<>();
+                int num;
+                for(int i = 0; i < especiRam.getTotalNumeroBloques() * especiRam.getTamañoBloque(); i++){
+                    num = (int) (Math.random() * 256);
+                    RAM.add(Integer.toHexString(num));
+                }
         }
 
         EstadoEspecificacion.setEspeciRamEnHome(true); //especificacion aplicada
@@ -217,6 +225,20 @@ public class Home extends javax.swing.JPanel {
                     CACHE.add(l);
                 }
                 break;
+            case UtilCache.LLENADO_ALEAT:
+                switch(especificaCache.getFuncionCorrespondencia()){
+                    case UtilCache.DIRECTA:
+                        for(int i = 0; i < especificaCache.getNumTotalLineas(); i++){
+                            Linea l = new Linea();
+                            for(int j = 0; j < especificaRam.getTamañoBloque(); j++){
+                                l.elementos.add(Home.RAM.get(i * especificaRam.getTamañoBloque() + j));
+                            }
+                            String direccion = Integer.toHexString(i * especificaRam.getTamañoBloque());
+                            String eti = UtilCache.generarEtiqueta(direccion, especificaRam.getMaxDireccionable(), especificaCache.getFormatEtiqueta());
+                            l.etiqueta = eti;
+                            Home.CACHE.add(l);
+                        }
+                }
         }
 
         EstadoEspecificacion.setEspeciCacheEnHome(true); //Especificacion aplicada
@@ -569,7 +591,7 @@ public class Home extends javax.swing.JPanel {
 
         txtAciertos.setEditable(false);
 
-        tlbEjecucion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tlbEjecucion.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tlbEjecucion.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -583,7 +605,7 @@ public class Home extends javax.swing.JPanel {
         ));
         jScrollPane4.setViewportView(tlbEjecucion);
 
-        tlbPasosSeguidos.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tlbPasosSeguidos.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         tlbPasosSeguidos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
