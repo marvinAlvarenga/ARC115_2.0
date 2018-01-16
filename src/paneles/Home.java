@@ -28,8 +28,8 @@ public class Home extends javax.swing.JPanel {
 
     private EspecificacionRam especiRam;
     private EspecificacionCache especificaCache;
-    
-    List<Peticion> listaPeticiones = new ArrayList<>();  
+
+    List<Peticion> listaPeticiones = new ArrayList<>();
     public static List<String> RAM = new ArrayList<>();
     public static List<Linea> CACHE = new ArrayList<>();
 
@@ -72,21 +72,24 @@ public class Home extends javax.swing.JPanel {
 
         //Maximo Direccionable
         etiMaxDireccionable.setText("Maximo Direccionable: " + especiRam.getMaxDireccionable() + " bits");
-        
+
         //Creacion del componente que representara a la RAM
-        switch(especiRam.getTipoLlenado()){
+        switch (especiRam.getTipoLlenado()) {
             case UtilCache.MANUAL:
                 Home.RAM = null;
                 Home.RAM = new ArrayList<>();
                 String cadByte = "00";
                 String dato = "";
-                if(especiRam.getNivelDireccionable() == UnidadMedida.PALABRA){
-                    for(int i=0;i<especiRam.getTamañoPalabra();i++)
+                if (especiRam.getNivelDireccionable() == UnidadMedida.PALABRA) {
+                    for (int i = 0; i < especiRam.getTamañoPalabra(); i++) {
                         dato += cadByte;
-                }else
+                    }
+                } else {
                     dato = cadByte;
-                for(int i=0;i<especiRam.getTotalNumeroBloques()*especiRam.getTamañoBloque();i++)
+                }
+                for (int i = 0; i < especiRam.getTotalNumeroBloques() * especiRam.getTamañoBloque(); i++) {
                     RAM.add(dato);
+                }
                 break;
         }
 
@@ -191,22 +194,24 @@ public class Home extends javax.swing.JPanel {
                 tablaEjecu.setColumnCount(4);
                 tablaEjecu.setColumnIdentifiers(new Object[]{"Direcciones", "Etiqueta", "Conjunto", "Palabra"});
         }
-        
+
         //Llenado de la cache
-        switch(especificaRam.getTipoLlenado()){
+        switch (especificaRam.getTipoLlenado()) {
             case UtilCache.MANUAL:
                 Home.CACHE = null;
                 Home.CACHE = new ArrayList<>();
                 String cadByte = "00";
                 String dato = "";
-                if(especificaRam.getNivelDireccionable()== UnidadMedida.PALABRA){
-                    for(int i=0;i<especiRam.getTamañoPalabra();i++)
+                if (especificaRam.getNivelDireccionable() == UnidadMedida.PALABRA) {
+                    for (int i = 0; i < especiRam.getTamañoPalabra(); i++) {
                         dato += cadByte;
-                }else
+                    }
+                } else {
                     dato = cadByte;
-                for(int i=0; i<especificaCache.getNumTotalLineas();i++){
+                }
+                for (int i = 0; i < especificaCache.getNumTotalLineas(); i++) {
                     Linea l = new Linea();
-                    for(int j=0;j<especificaRam.getTamañoBloque();j++){
+                    for (int j = 0; j < especificaRam.getTamañoBloque(); j++) {
                         l.elementos.add(dato);
                     }
                     CACHE.add(l);
@@ -538,6 +543,11 @@ public class Home extends javax.swing.JPanel {
 
         btnProcesar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnProcesar.setText("Procesar");
+        btnProcesar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProcesarActionPerformed(evt);
+            }
+        });
 
         btnEliminar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnEliminar.setText("Eliminar");
@@ -559,7 +569,7 @@ public class Home extends javax.swing.JPanel {
 
         txtAciertos.setEditable(false);
 
-        tlbEjecucion.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tlbEjecucion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tlbEjecucion.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -573,7 +583,7 @@ public class Home extends javax.swing.JPanel {
         ));
         jScrollPane4.setViewportView(tlbEjecucion);
 
-        tlbPasosSeguidos.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tlbPasosSeguidos.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tlbPasosSeguidos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -622,9 +632,8 @@ public class Home extends javax.swing.JPanel {
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(11, 11, 11)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
@@ -741,14 +750,15 @@ public class Home extends javax.swing.JPanel {
                     } else {
                         mensaje = "Debe de completar todos los campos de texto disponibles para editar";
                     }
-                }else
+                } else {
                     mensaje = "Ingrese el valor a escribir en el campo correspondiente";
+                }
 
                 break;
         }
         if (!mensaje.isEmpty()) {
             JOptionPane.showMessageDialog(this, mensaje, "Advertencia!", JOptionPane.WARNING_MESSAGE);
-        }else{
+        } else {
             listaPeticiones.add(peti);
             txtCampoDireccion.setText("");
             txtCampoRegistro.setText("");
@@ -805,31 +815,133 @@ public class Home extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void txtCampoDireccionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCampoDireccionKeyTyped
-        if(especiRam != null)
+        if (especiRam != null) {
             Validador.validarHexaYDirsAdmitidas(evt, txtCampoDireccion.getText().length(), especiRam.getMaxDireccionable());
-        else
+        } else {
             evt.consume();
+        }
     }//GEN-LAST:event_txtCampoDireccionKeyTyped
 
     private void txtCampoRegistroKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCampoRegistroKeyTyped
-        if(especiRam != null)
+        if (especiRam != null) {
             Validador.validarHexaYDirsAdmitidas(evt, txtCampoRegistro.getText().length(), especiRam.getMaxDireccionable());
-        else
+        } else {
             evt.consume();
+        }
     }//GEN-LAST:event_txtCampoRegistroKeyTyped
 
     private void txtDatoEscribirKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoEscribirKeyTyped
-        if(especiRam != null){
-            if(especiRam.getNivelDireccionable() == UnidadMedida.BYTE)
+        if (especiRam != null) {
+            if (especiRam.getNivelDireccionable() == UnidadMedida.BYTE) {
                 Validador.validarHexaYDatosAdmitidos(evt, txtDatoEscribir.getText().length(), 1);
-            else
+            } else {
                 Validador.validarHexaYDatosAdmitidos(evt, txtDatoEscribir.getText().length(), especiRam.getTamañoPalabra());
-        }else{
+            }
+        } else {
             evt.consume();
         }
-        
+
     }//GEN-LAST:event_txtDatoEscribirKeyTyped
 
+    private void btnProcesarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcesarActionPerformed
+        if (listaPeticiones.size() > 0) {
+
+            txtAciertos.setText("");
+            txtFallos.setText("");
+
+            DefaultTableModel tablaDirecciones = (DefaultTableModel) tlbEjecucion.getModel();
+            DefaultTableModel tablaPasos = (DefaultTableModel) tlbPasosSeguidos.getModel();
+            for (int i = tlbEjecucion.getRowCount() - 1; i >= 0; i--) {
+                tablaDirecciones.removeRow(i);
+            }
+            for (int i = tlbPasosSeguidos.getRowCount() - 1; i >= 0; i--) {
+                tablaPasos.removeRow(i);
+            }
+
+            int aciertos = 0;
+            int fallos = 0;
+
+            for (Peticion p : listaPeticiones) {
+                tablaPasos.addRow(new Object[]{"CPU lanza una Peticion"});
+                tablaPasos.addRow(new Object[]{"Calculando Direccion Fisica..."});
+
+                String dir = UtilDireccionamiento.generarDireccionFisica(p);
+                detallesFormato(dir, tablaDirecciones); // Detalles de direccion en tabla
+
+                tablaPasos.addRow(new Object[]{"Direccion Fisica Calculada: " + dir});
+                tablaPasos.addRow(new Object[]{"Verificando la Cache"});
+
+                String etiqueta = UtilCache.generarEtiqueta(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatEtiqueta());
+                long numBloque = UtilCache.generarBloqueMP(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatPalabra());
+                int palabra = UtilCache.generarPalabra(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatPalabra());
+                String dato = null;
+                
+                if(p.getTipoPeticion() == UtilDireccionamiento.ESCRITURA){
+                    RAM.set((int)numBloque * especiRam.getTamañoBloque() + palabra, p.getCampoDatoEscribir());
+                }
+
+                switch (especificaCache.getFuncionCorrespondencia()) {
+                    case UtilCache.DIRECTA:
+                        long numLinea = numBloque % especificaCache.getNumTotalLineas();
+                        Linea l = CACHE.get((int) numLinea);
+                        if (l.etiqueta != null && l.etiqueta.equals(etiqueta)) {
+                            for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                l.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                            }
+                            aciertos++;
+                            txtAciertos.setText(String.valueOf(aciertos));
+                            tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + numLinea});
+                            dato = l.elementos.get(palabra);
+                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
+                        } else { //Fallo en la Cache
+                            fallos++;
+                            txtFallos.setText(String.valueOf(fallos));
+                            tablaPasos.addRow(new Object[]{"Fallo en Cache"});
+                            tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
+                            dato = RAM.get((int)numBloque * especiRam.getTamañoBloque() + palabra);
+                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
+                            l.etiqueta = etiqueta;
+                            for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                l.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                            }
+                        }
+                }
+                tablaPasos.addRow(new Object[]{"-------------------------------------------"});                
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(this, "No hay Peticiones que procesar", "Advertencia!", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btnProcesarActionPerformed
+
+    private void detallesFormato(String dirHexa, DefaultTableModel tabla) {
+        String binario = UtilDireccionamiento.direccionEnBinario(dirHexa, especiRam.getMaxDireccionable());
+        String etiqueta;
+        String linea;
+        String conjunto;
+        String palabra;
+
+        etiqueta = binario.substring(0, especificaCache.getFormatEtiqueta());
+        palabra = binario.substring(especiRam.getMaxDireccionable() - especificaCache.getFormatPalabra());
+        switch (especificaCache.getFuncionCorrespondencia()) {
+            case UtilCache.DIRECTA:
+                linea = binario.substring(especificaCache.getFormatEtiqueta(), especificaCache.getFormatEtiqueta() + especificaCache.getFormatLinea());
+                tabla.addRow(new Object[]{binario, etiqueta, linea, palabra});
+                tabla.addRow(new Object[]{dirHexa, Long.toHexString(Long.parseLong(etiqueta, 2)), Long.toHexString(Long.parseLong(linea, 2)), Long.toHexString(Long.parseLong(palabra, 2))});
+                tabla.addRow(new Object[]{"", "", "", ""});
+                break;
+            case UtilCache.POR_CONJUNTO:
+                conjunto = binario.substring(especificaCache.getFormatEtiqueta(), especificaCache.getFormatEtiqueta() + especificaCache.getFormatConjunto());
+                tabla.addRow(new Object[]{binario, etiqueta, conjunto, palabra});
+                tabla.addRow(new Object[]{dirHexa, Long.toHexString(Long.parseLong(etiqueta, 2)), Long.toHexString(Long.parseLong(conjunto, 2)), Long.toHexString(Long.parseLong(palabra, 2))});
+                tabla.addRow(new Object[]{"", "", "", ""});
+                break;
+            case UtilCache.ASOCIATIVA:
+                tabla.addRow(new Object[]{binario, etiqueta, palabra});
+                tabla.addRow(new Object[]{dirHexa, Long.toHexString(Long.parseLong(etiqueta, 2)), Long.toHexString(Long.parseLong(palabra, 2))});
+                tabla.addRow(new Object[]{"", "", ""});
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarPeticion;

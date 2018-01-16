@@ -62,7 +62,7 @@ public class Personalizacion extends javax.swing.JPanel {
         comboBytesCache = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
         comboCorrespondencia = new javax.swing.JComboBox<>();
-        jLabel9 = new javax.swing.JLabel();
+        etiReemplazo = new javax.swing.JLabel();
         comboAlgoReemplazo = new javax.swing.JComboBox<>();
         etiNumLineasConjunto = new javax.swing.JLabel();
         txtLineasConjunto = new javax.swing.JTextField();
@@ -90,7 +90,7 @@ public class Personalizacion extends javax.swing.JPanel {
         });
 
         comboBytesRam.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        comboBytesRam.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "KiloByte", "MegaByte", "GigaByte" }));
+        comboBytesRam.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "KiloByte", "MegaByte" }));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Direccionable:");
@@ -213,7 +213,7 @@ public class Personalizacion extends javax.swing.JPanel {
         });
 
         comboBytesCache.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        comboBytesCache.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "KiloByte", "MegaByte", "GigaByte" }));
+        comboBytesCache.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "KiloByte", "MegaByte" }));
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel8.setText("F. Correspondencia:");
@@ -226,11 +226,13 @@ public class Personalizacion extends javax.swing.JPanel {
             }
         });
 
-        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel9.setText("Algoritmo de Reemplazo:");
+        etiReemplazo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiReemplazo.setText("Algoritmo de Reemplazo:");
+        etiReemplazo.setEnabled(false);
 
         comboAlgoReemplazo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         comboAlgoReemplazo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "LRU", "FIFO", "Aleatorio" }));
+        comboAlgoReemplazo.setEnabled(false);
 
         etiNumLineasConjunto.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         etiNumLineasConjunto.setText("Num. Lineas del Conjunto:");
@@ -264,7 +266,7 @@ public class Personalizacion extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(comboBytesCache, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel9)
+                        .addComponent(etiReemplazo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(comboAlgoReemplazo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -285,7 +287,7 @@ public class Personalizacion extends javax.swing.JPanel {
                     .addComponent(jLabel7)
                     .addComponent(txtCapacidadCache, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(comboBytesCache, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9)
+                    .addComponent(etiReemplazo)
                     .addComponent(comboAlgoReemplazo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(43, 43, 43)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -516,6 +518,14 @@ public class Personalizacion extends javax.swing.JPanel {
             etiNumLineasConjunto.setEnabled(false);
             txtLineasConjunto.setEditable(false);
         }
+        
+        if(comboCorrespondencia.getSelectedIndex() == UtilCache.DIRECTA){
+            etiReemplazo.setEnabled(false);
+            comboAlgoReemplazo.setEnabled(false);
+        }else{
+            etiReemplazo.setEnabled(true);
+            comboAlgoReemplazo.setEnabled(true);
+        }
     }//GEN-LAST:event_comboCorrespondenciaActionPerformed
 
     private void pintarDetallesEnTabla(){
@@ -630,6 +640,7 @@ public class Personalizacion extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> comboLlenadoRam;
     private javax.swing.JLabel etiLineas;
     private javax.swing.JLabel etiNumLineasConjunto;
+    private javax.swing.JLabel etiReemplazo;
     private javax.swing.JLabel etiTamBloques;
     private javax.swing.JLabel etiTamPalabra;
     private javax.swing.JLabel etiTamPalabraMedida;
@@ -640,7 +651,6 @@ public class Personalizacion extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
