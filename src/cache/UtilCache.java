@@ -12,5 +12,7 @@ public class UtilCache {
     public static final int LRU = 0;
     public static final int FIFO = 1;
     public static final int ALEATORIO = 2;
+    public static final int MANUAL = 0;
+    public static final int LLENADO_ALEAT = 1;
     
 }

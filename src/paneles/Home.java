@@ -5,6 +5,7 @@
  */
 package paneles;
 
+import cache.Linea;
 import cache.UtilCache;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
@@ -28,7 +29,9 @@ public class Home extends javax.swing.JPanel {
     private EspecificacionRam especiRam;
     private EspecificacionCache especificaCache;
     
-    static List<Peticion> listaPeticiones = new ArrayList<>();
+    List<Peticion> listaPeticiones = new ArrayList<>();  
+    public static List<String> RAM = new ArrayList<>();
+    public static List<Linea> CACHE = new ArrayList<>();
 
     /**
      * Creates new form Home
@@ -69,13 +72,30 @@ public class Home extends javax.swing.JPanel {
 
         //Maximo Direccionable
         etiMaxDireccionable.setText("Maximo Direccionable: " + especiRam.getMaxDireccionable() + " bits");
+        
+        //Creacion del componente que representara a la RAM
+        switch(especiRam.getTipoLlenado()){
+            case UtilCache.MANUAL:
+                Home.RAM = null;
+                Home.RAM = new ArrayList<>();
+                String cadByte = "00";
+                String dato = "";
+                if(especiRam.getNivelDireccionable() == UnidadMedida.PALABRA){
+                    for(int i=0;i<especiRam.getTamañoPalabra();i++)
+                        dato += cadByte;
+                }else
+                    dato = cadByte;
+                for(int i=0;i<especiRam.getTotalNumeroBloques()*especiRam.getTamañoBloque();i++)
+                    RAM.add(dato);
+                break;
+        }
 
         EstadoEspecificacion.setEspeciRamEnHome(true); //especificacion aplicada
     }
 
     public void aplicarEspecificacionCache() {
         String aux;
-        EspecificacionRam especiRam = especificaCache.getRam();
+        EspecificacionRam especificaRam = especificaCache.getRam();
 
         //Capacidad Cache
         aux = String.valueOf(especificaCache.getCapacidadCache());
@@ -105,8 +125,8 @@ public class Home extends javax.swing.JPanel {
         etiCorrespondencia.setText("Correspondencia: " + aux);
 
         //Tamaño de linea
-        aux = String.valueOf(especiRam.getTamañoBloque());
-        switch (especiRam.getNivelDireccionable()) {
+        aux = String.valueOf(especificaRam.getTamañoBloque());
+        switch (especificaRam.getNivelDireccionable()) {
             case UnidadMedida.BYTE:
                 aux += " Bytes";
                 break;
@@ -170,6 +190,28 @@ public class Home extends javax.swing.JPanel {
 
                 tablaEjecu.setColumnCount(4);
                 tablaEjecu.setColumnIdentifiers(new Object[]{"Direcciones", "Etiqueta", "Conjunto", "Palabra"});
+        }
+        
+        //Llenado de la cache
+        switch(especificaRam.getTipoLlenado()){
+            case UtilCache.MANUAL:
+                Home.CACHE = null;
+                Home.CACHE = new ArrayList<>();
+                String cadByte = "00";
+                String dato = "";
+                if(especificaRam.getNivelDireccionable()== UnidadMedida.PALABRA){
+                    for(int i=0;i<especiRam.getTamañoPalabra();i++)
+                        dato += cadByte;
+                }else
+                    dato = cadByte;
+                for(int i=0; i<especificaCache.getNumTotalLineas();i++){
+                    Linea l = new Linea();
+                    for(int j=0;j<especificaRam.getTamañoBloque();j++){
+                        l.elementos.add(dato);
+                    }
+                    CACHE.add(l);
+                }
+                break;
         }
 
         EstadoEspecificacion.setEspeciCacheEnHome(true); //Especificacion aplicada

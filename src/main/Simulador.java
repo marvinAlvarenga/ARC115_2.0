@@ -5,10 +5,13 @@
  */
 package main;
 
+import cache.Linea;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
 import configuraciones.EstadoEspecificacion;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
 import paneles.Componentes;
 import paneles.Home;
 import paneles.Personalizacion;
@@ -23,7 +26,7 @@ public class Simulador extends javax.swing.JFrame {
     private Personalizacion personalizar;   // Pantalla de Ajustes
     private Home inicio;                    // Pantalla principal del simulador
     private Componentes componentes;        // Pantalla para ver los componentes y sus contenidos
-
+    
     /**
      * Creates new form Simulador
      */
@@ -143,14 +146,14 @@ public class Simulador extends javax.swing.JFrame {
         if(personalizar != null){
             EspecificacionCache espeCache = personalizar.getEspecificacionCache();
             EspecificacionRam espeRam = personalizar.getEspecificacionRam();
-            
-            if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnHome()){ //No ha sido aplicada en el panel HOME
-                inicio.setEspecificaCache(espeCache);
-                inicio.aplicarEspecificacionCache();
-            }
+                      
             if(espeRam != null && !EstadoEspecificacion.isEspeciRamEnHome()){ // No ha sido aplicada en el home la ram
                 inicio.setEspeciRam(espeRam);
                 inicio.aplicarEspecificacionRam();
+            }
+            if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnHome()){ //No ha sido aplicada en el panel HOME
+                inicio.setEspecificaCache(espeCache);
+                inicio.aplicarEspecificacionCache();
             }
         }
         
@@ -166,17 +169,27 @@ public class Simulador extends javax.swing.JFrame {
             componentes.setSize(tamañoPaneles);
         }
         
+        if(inicio == null){
+            inicio = new Home();
+            inicio.setSize(tamañoPaneles);
+        }
+            
+        
         if(personalizar != null){
             EspecificacionCache espeCache = personalizar.getEspecificacionCache();
             EspecificacionRam espeRam = personalizar.getEspecificacionRam();
             
-            if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnCompo()){ //No han sido aplicada en el panel de componentes
-                componentes.setEspecificaCache(espeCache);
-                componentes.aplicarEspecificacionCache();
-            }
             if(espeRam != null && !EstadoEspecificacion.isEspeciRamEnCompo()){
+                inicio.setEspeciRam(espeRam);
+                inicio.aplicarEspecificacionRam();
                 componentes.setEspecificaRam(espeRam);
                 componentes.aplicarEspecificacionRam();
+            }
+            if(espeCache != null && !EstadoEspecificacion.isEspeciCacheEnCompo()){ //No han sido aplicada en el panel de componentes
+                inicio.setEspecificaCache(espeCache);
+                inicio.aplicarEspecificacionCache();
+                componentes.setEspecificaCache(espeCache);
+                componentes.aplicarEspecificacionCache();
             }
         }
         

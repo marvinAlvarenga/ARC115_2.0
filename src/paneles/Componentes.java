@@ -5,9 +5,11 @@
  */
 package paneles;
 
+import cache.Linea;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
 import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -29,8 +31,14 @@ public class Componentes extends javax.swing.JPanel {
     
     public void aplicarEspecificacionCache(){
         TableColumnModel columnaModel = new DefaultTableColumnModel();
+        int totalColumnas = especificaCache.getRam().getTamañoBloque() + 1;
+        DefaultTableModel tablaCache = (DefaultTableModel) tlbCACHE.getModel();
+        for (int i = tablaCache.getRowCount() - 1; i >= 0; i--) {
+            tablaCache.removeRow(i);
+        }
+        tablaCache.setColumnCount(totalColumnas);
         
-        for(int i = 0; i < especificaCache.getRam().getTamañoBloque() + 1; i++){
+        for(int i = 0; i < totalColumnas; i++){
             TableColumn columna = new TableColumn(i);
             if(i == 0)
                 columna.setHeaderValue("Linea");
@@ -39,20 +47,28 @@ public class Componentes extends javax.swing.JPanel {
             columnaModel.addColumn(columna);
         }
         tlbCACHE.setColumnModel(columnaModel);
+        
+        for(int i = 0; i < Home.CACHE.size(); i++){
+            Linea l = Home.CACHE.get(i);
+            Object[] a1 = new Object[1];
+            a1[0] = String.valueOf(i);
+            Object[] ret = new Object[a1.length + l.elementos.size()];
+            System.arraycopy(a1, 0, ret, 0, a1.length);
+            System.arraycopy(l.elementos.toArray(), 0, ret, a1.length, l.elementos.size());
+            tablaCache.addRow(ret);
+        }
     }
     
     public void aplicarEspecificacionRam(){
-        TableColumnModel columnaModel = new DefaultTableColumnModel();
-        
-        for(int i = 0; i < 2; i++){
-            TableColumn columna = new TableColumn(i);
-            switch(i){
-                case 0: columna.setHeaderValue("Direccion"); break;
-                case 1: columna.setHeaderValue("Datos");
-            }
-            columnaModel.addColumn(columna);
+        DefaultTableModel tablaRam = (DefaultTableModel) tlbRAM.getModel();
+        for (int i = tablaRam.getRowCount() - 1; i >= 0; i--) {
+            tablaRam.removeRow(i);
         }
-        tlbRAM.setColumnModel(columnaModel);
+        tablaRam.setColumnCount(2);
+        tablaRam.setColumnIdentifiers(new Object[]{"Direcciones", "Datos"});
+        for(int i = 0; i < Home.RAM.size(); i++){
+            tablaRam.addRow(new Object[]{Integer.toHexString(i), Home.RAM.get(i)});
+        }
     }
 
     public EspecificacionCache getEspecificaCache() {
