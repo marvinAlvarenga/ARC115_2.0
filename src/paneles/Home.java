@@ -1033,6 +1033,15 @@ public class Home extends javax.swing.JPanel {
                                     li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
                                 }
                                 dato = li.elementos.get(palabra);
+                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO){
+                                int lineaReemplazar = (int)(Math.random() * especificaCache.getNumTotalLineas());
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
+                                Linea li = CACHE.get(lineaReemplazar);
+                                li.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                dato = li.elementos.get(palabra);
                             }
                     }
                         break;
