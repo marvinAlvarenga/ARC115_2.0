@@ -14,6 +14,7 @@ import cpu.Peticion;
 import cpu.UtilDireccionamiento;
 import java.util.ArrayList;
 import java.util.List;
+import javax.print.DocFlavor;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import utilidades.UnidadMedida;
@@ -32,6 +33,10 @@ public class Home extends javax.swing.JPanel {
     List<Peticion> listaPeticiones = new ArrayList<>();
     public static List<String> RAM = new ArrayList<>();
     public static List<Linea> CACHE = new ArrayList<>();
+
+    //LISTA QUE DAN SOPORTE A REEMPLAZAMIENTO FIFO Y LRU DE LA TOTALMENTE ASOCIATIVA
+    List<Integer> CAFIFO = new ArrayList<>();
+    List<Integer> CALRU = new ArrayList<>();
 
     /**
      * Creates new form Home
@@ -68,11 +73,21 @@ public class Home extends javax.swing.JPanel {
         etiTamañoBloque.setText("Tamaño Bloque: " + aux);
 
         //Total Bloques
-        etiTotalBloques.setText("Total Bloques: " + especiRam.getTotalNumeroBloques());
+        etiTotalBloques.setText("Total Bloques: " + especiRam.getTotalNumeroBloques() + " -->(2^" + Validador.esPotenciaDeDos(String.valueOf(especiRam.getTotalNumeroBloques())) + ")");
 
         //Maximo Direccionable
         etiMaxDireccionable.setText("Maximo Direccionable: " + especiRam.getMaxDireccionable() + " bits");
 
+        //Bus de datos
+        switch(especiRam.getNivelDireccionable()){
+            case UnidadMedida.BYTE:
+                etiBusDatos.setText("Bus de datos: 8 bits");
+                break;
+            case UnidadMedida.PALABRA:
+                int numBits = 8 * especiRam.getTamañoPalabra();
+                etiBusDatos.setText("Bus de datos: " + numBits + " bits");
+        }
+        
         //Creacion del componente que representara a la RAM
         switch (especiRam.getTipoLlenado()) {
             case UtilCache.MANUAL:
@@ -95,7 +110,7 @@ public class Home extends javax.swing.JPanel {
                 Home.RAM = null;
                 Home.RAM = new ArrayList<>();
                 int num;
-                for(int i = 0; i < especiRam.getTotalNumeroBloques() * especiRam.getTamañoBloque(); i++){
+                for (int i = 0; i < especiRam.getTotalNumeroBloques() * especiRam.getTamañoBloque(); i++) {
                     num = (int) (Math.random() * 256);
                     RAM.add(Integer.toHexString(num));
                 }
@@ -226,8 +241,26 @@ public class Home extends javax.swing.JPanel {
                 }
                 break;
             case UtilCache.LLENADO_ALEAT:
-                switch(especificaCache.getFuncionCorrespondencia()){
+                Home.CACHE = null;
+                Home.CACHE = new ArrayList<>();
+                switch (especificaCache.getFuncionCorrespondencia()) {
                     case UtilCache.DIRECTA:
+                        for (int i = 0; i < especificaCache.getNumTotalLineas(); i++) {
+                            Linea l = new Linea();
+                            for (int j = 0; j < especificaRam.getTamañoBloque(); j++) {
+                                l.elementos.add(Home.RAM.get(i * especificaRam.getTamañoBloque() + j));
+                            }
+                            String direccion = Integer.toHexString(i * especificaRam.getTamañoBloque());
+                            String eti = UtilCache.generarEtiqueta(direccion, especificaRam.getMaxDireccionable(), especificaCache.getFormatEtiqueta());
+                            l.etiqueta = eti;
+                            Home.CACHE.add(l);
+                        }
+                        break;
+                    case UtilCache.ASOCIATIVA:
+                        CAFIFO = null;
+                        CALRU = null;
+                        CAFIFO = new ArrayList<>();
+                        CALRU = new ArrayList<>();
                         for(int i = 0; i < especificaCache.getNumTotalLineas(); i++){
                             Linea l = new Linea();
                             for(int j = 0; j < especificaRam.getTamañoBloque(); j++){
@@ -237,7 +270,12 @@ public class Home extends javax.swing.JPanel {
                             String eti = UtilCache.generarEtiqueta(direccion, especificaRam.getMaxDireccionable(), especificaCache.getFormatEtiqueta());
                             l.etiqueta = eti;
                             Home.CACHE.add(l);
+                            CALRU.add(i);
+                            CAFIFO.add(i);
                         }
+                        break;
+                    case UtilCache.POR_CONJUNTO:
+                        break;
                 }
         }
 
@@ -283,6 +321,7 @@ public class Home extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         tlbFormatoCache = new javax.swing.JTable();
         etiReemplazo = new javax.swing.JLabel();
+        etiBusDatos = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         comboTipoOperacion = new javax.swing.JComboBox<>();
@@ -355,6 +394,9 @@ public class Home extends javax.swing.JPanel {
         etiReemplazo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         etiReemplazo.setText("Reemplazo:");
 
+        etiBusDatos.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        etiBusDatos.setText("Bus de datos:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -365,7 +407,8 @@ public class Home extends javax.swing.JPanel {
                     .addComponent(etiRam)
                     .addComponent(etiTamañoBloque)
                     .addComponent(etiTotalBloques)
-                    .addComponent(etiMaxDireccionable))
+                    .addComponent(etiMaxDireccionable)
+                    .addComponent(etiBusDatos))
                 .addGap(86, 86, 86)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -409,7 +452,9 @@ public class Home extends javax.swing.JPanel {
                             .addComponent(etiMaxDireccionable)
                             .addComponent(etiNumLineas))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(etiTamDirecciones))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(etiTamDirecciones)
+                            .addComponent(etiBusDatos)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(etiReemplazo))
@@ -897,9 +942,9 @@ public class Home extends javax.swing.JPanel {
                 long numBloque = UtilCache.generarBloqueMP(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatPalabra());
                 int palabra = UtilCache.generarPalabra(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatPalabra());
                 String dato = null;
-                
-                if(p.getTipoPeticion() == UtilDireccionamiento.ESCRITURA){
-                    RAM.set((int)numBloque * especiRam.getTamañoBloque() + palabra, p.getCampoDatoEscribir());
+
+                if (p.getTipoPeticion() == UtilDireccionamiento.ESCRITURA) {
+                    RAM.set((int) numBloque * especiRam.getTamañoBloque() + palabra, p.getCampoDatoEscribir());
                 }
 
                 switch (especificaCache.getFuncionCorrespondencia()) {
@@ -908,27 +953,96 @@ public class Home extends javax.swing.JPanel {
                         Linea l = CACHE.get((int) numLinea);
                         if (l.etiqueta != null && l.etiqueta.equals(etiqueta)) {
                             for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                l.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                l.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
                             }
                             aciertos++;
                             txtAciertos.setText(String.valueOf(aciertos));
                             tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + numLinea});
                             dato = l.elementos.get(palabra);
-                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
+                            //tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
                         } else { //Fallo en la Cache
                             fallos++;
                             txtFallos.setText(String.valueOf(fallos));
                             tablaPasos.addRow(new Object[]{"Fallo en Cache"});
                             tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
-                            dato = RAM.get((int)numBloque * especiRam.getTamañoBloque() + palabra);
+                            dato = RAM.get((int) numBloque * especiRam.getTamañoBloque() + palabra);
                             tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
                             l.etiqueta = etiqueta;
                             for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                l.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                l.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
                             }
                         }
+                        break;
+                    case UtilCache.ASOCIATIVA:
+                        int lineaExito = -1;
+                        for (int i = 0; i < especificaCache.getNumTotalLineas(); i++) { //Verifiacndo si el dato ya esta en cache
+                            Linea li = CACHE.get(i);
+                            if (li.etiqueta != null && li.etiqueta.equals(etiqueta)) {
+                                lineaExito = i;
+                                break;
+                            }
+                        }
+                        if (lineaExito != -1) { //Exito en la cache
+                            aciertos++;
+                            txtAciertos.setText(String.valueOf(aciertos));
+                            tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + lineaExito});
+                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
+                            dato = CACHE.get(lineaExito).elementos.get(palabra);
+                            CALRU.remove(new Integer(lineaExito)); //Eliminar de su posicion actual
+                            CALRU.add(lineaExito); //Pasar al mas usado recientemente
+                        } else { //NO HAY EXITO EN CACHE
+                            fallos++;
+                            txtFallos.setText(String.valueOf(fallos));
+                            tablaPasos.addRow(new Object[]{"Fallo en Cache"});
+                            //pasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
+                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
+                            int numElemEnCache = CAFIFO.size(); //verificar si la cache esta llena
+                            if (numElemEnCache < especificaCache.getNumTotalLineas()) { //Hay espacio en cache: Meter dato en una linea vacia
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numElemEnCache});
+                                Linea li = CACHE.get(numElemEnCache);
+                                li.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                dato = li.elementos.get(palabra);
+                                CAFIFO.add(numElemEnCache);
+                                CALRU.add(numElemEnCache); //Usado mas recientemente
+                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.LRU) { //Si la Cache esta llena, Usar un algoritmo de Sustitucion
+                                int lineaReemplazar = CALRU.get(0);
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
+                                CALRU.remove(0);
+                                CALRU.add(lineaReemplazar); //Usado mas recientemente
+                                CAFIFO.remove(new Integer(lineaReemplazar)); //Nuevo dato, pasar al ultimo de la cola
+                                CAFIFO.add(lineaReemplazar);
+                                Linea li = CACHE.get(lineaReemplazar);
+                                li.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                dato = li.elementos.get(palabra);
+                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.FIFO) {
+                                int lineaReemplazar = CAFIFO.get(0);
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
+                                CAFIFO.remove(0);
+                                CAFIFO.add(lineaReemplazar); //pasar al final de la cola
+                                CALRU.remove(new Integer(lineaReemplazar));
+                                CALRU.add(lineaReemplazar); // Nuevo usado mas recientemente
+                                Linea li = CACHE.get(lineaReemplazar);
+                                li.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                dato = li.elementos.get(palabra);
+                            }
+                    }
+                        break;
+                    case UtilCache.POR_CONJUNTO:
+                        //Asociativa por conjunto
+                        break;
+                    
                 }
-                tablaPasos.addRow(new Object[]{"-------------------------------------------"});                
+                tablaPasos.addRow(new Object[]{"Dato devuelto al CPU:" + dato});
+                tablaPasos.addRow(new Object[]{"-------------------------------------------"});
             }
 
         } else {
@@ -971,6 +1085,7 @@ public class Home extends javax.swing.JPanel {
     private javax.swing.JButton btnProcesar;
     private javax.swing.JComboBox<String> comboDireccionamiento;
     private javax.swing.JComboBox<String> comboTipoOperacion;
+    private javax.swing.JLabel etiBusDatos;
     private javax.swing.JLabel etiCache;
     private javax.swing.JLabel etiCampoDireccion;
     private javax.swing.JLabel etiCampoRegistro;

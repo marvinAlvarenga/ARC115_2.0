@@ -596,7 +596,7 @@ public class Personalizacion extends javax.swing.JPanel {
 
         //Total de numero de bloques
         aux = String.valueOf(especificacionRam.getTotalNumeroBloques());
-        tablaDetalles.addRow(new Object[]{"Num. Tot. de bloques: " + aux});
+        tablaDetalles.addRow(new Object[]{"Num. Tot. de bloques: " + aux + " -->(2^" + Validador.esPotenciaDeDos(String.valueOf(especificacionRam.getTotalNumeroBloques())) + ")"});
 
         //Maximo direccionable
         aux = String.valueOf(especificacionRam.getMaxDireccionable());
