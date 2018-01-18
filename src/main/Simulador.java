@@ -29,6 +29,7 @@ public class Simulador extends javax.swing.JFrame {
      */
     public Simulador() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
