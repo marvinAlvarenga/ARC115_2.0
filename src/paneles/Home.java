@@ -936,11 +936,225 @@ public class Home extends javax.swing.JPanel {
     }//GEN-LAST:event_txtDatoEscribirKeyTyped
 
     private void btnProcesarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcesarActionPerformed
-        if (listaPeticiones.size() > 0) {
+        try {
+            if (listaPeticiones.size() > 0) {
 
-            txtAciertos.setText("");
-            txtFallos.setText("");
+                txtAciertos.setText("");
+                txtFallos.setText("");
 
+                DefaultTableModel tablaDirecciones = (DefaultTableModel) tlbEjecucion.getModel();
+                DefaultTableModel tablaPasos = (DefaultTableModel) tlbPasosSeguidos.getModel();
+                for (int i = tlbEjecucion.getRowCount() - 1; i >= 0; i--) {
+                    tablaDirecciones.removeRow(i);
+                }
+                for (int i = tlbPasosSeguidos.getRowCount() - 1; i >= 0; i--) {
+                    tablaPasos.removeRow(i);
+                }
+
+                int aciertos = 0;
+                int fallos = 0;
+
+                for (Peticion p : listaPeticiones) {
+                    tablaPasos.addRow(new Object[]{"CPU lanza una Peticion"});
+                    tablaPasos.addRow(new Object[]{"Calculando Direccion Fisica..."});
+
+                    String dir = UtilDireccionamiento.generarDireccionFisica(p);
+                    detallesFormato(dir, tablaDirecciones); // Detalles de direccion en tabla
+
+                    tablaPasos.addRow(new Object[]{"Direccion Fisica Calculada: " + dir});
+                    tablaPasos.addRow(new Object[]{"Verificando la Cache"});
+
+                    String etiqueta = UtilCache.generarEtiqueta(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatEtiqueta());
+                    long numBloque = UtilCache.generarBloqueMP(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatPalabra());
+                    int palabra = UtilCache.generarPalabra(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatPalabra());
+                    String dato = null;
+
+                    if (p.getTipoPeticion() == UtilDireccionamiento.ESCRITURA) {
+                        RAM.set((int) numBloque * especiRam.getTamañoBloque() + palabra, p.getCampoDatoEscribir());
+                    }
+
+                    switch (especificaCache.getFuncionCorrespondencia()) {
+                        case UtilCache.DIRECTA:
+                            long numLinea = numBloque % especificaCache.getNumTotalLineas();
+                            Linea l = CACHE.get((int) numLinea);
+                            if (l.etiqueta != null && l.etiqueta.equals(etiqueta)) {
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    l.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                aciertos++;
+                                txtAciertos.setText(String.valueOf(aciertos));
+                                tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + numLinea});
+                                dato = l.elementos.get(palabra);
+                                //tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
+                            } else { //Fallo en la Cache
+                                fallos++;
+                                txtFallos.setText(String.valueOf(fallos));
+                                tablaPasos.addRow(new Object[]{"Fallo en Cache"});
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
+                                dato = RAM.get((int) numBloque * especiRam.getTamañoBloque() + palabra);
+                                tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
+                                l.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    l.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                            }
+                            break;
+                        case UtilCache.ASOCIATIVA:
+                            int lineaExito = -1;
+                            for (int i = 0; i < especificaCache.getNumTotalLineas(); i++) { //Verifiacndo si el dato ya esta en cache
+                                Linea li = CACHE.get(i);
+                                if (li.etiqueta != null && li.etiqueta.equals(etiqueta)) {
+                                    lineaExito = i;
+                                    break;
+                                }
+                            }
+                            if (lineaExito != -1) { //Exito en la cache
+                                aciertos++;
+                                txtAciertos.setText(String.valueOf(aciertos));
+                                tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + lineaExito});
+                                tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
+                                dato = CACHE.get(lineaExito).elementos.get(palabra);
+                                CALRU.remove(new Integer(lineaExito)); //Eliminar de su posicion actual
+                                CALRU.add(lineaExito); //Pasar al mas usado recientemente
+                            } else { //NO HAY EXITO EN CACHE
+                                fallos++;
+                                txtFallos.setText(String.valueOf(fallos));
+                                tablaPasos.addRow(new Object[]{"Fallo en Cache"});
+                                //pasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
+                                tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
+                                int numElemEnCache = CAFIFO.size(); //verificar si la cache esta llena
+                                if (numElemEnCache < especificaCache.getNumTotalLineas()) { //Hay espacio en cache: Meter dato en una linea vacia
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numElemEnCache});
+                                    Linea li = CACHE.get(numElemEnCache);
+                                    li.etiqueta = etiqueta;
+                                    for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                        li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                    }
+                                    dato = li.elementos.get(palabra);
+                                    CAFIFO.add(numElemEnCache);
+                                    CALRU.add(numElemEnCache); //Usado mas recientemente
+                                } else if (especificaCache.getAlgoReemplazo() == UtilCache.LRU) { //Si la Cache esta llena, Usar un algoritmo de Sustitucion
+                                    int lineaReemplazar = CALRU.get(0);
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
+                                    CALRU.remove(0);
+                                    CALRU.add(lineaReemplazar); //Usado mas recientemente
+                                    CAFIFO.remove(new Integer(lineaReemplazar)); //Nuevo dato, pasar al ultimo de la cola
+                                    CAFIFO.add(lineaReemplazar);
+                                    Linea li = CACHE.get(lineaReemplazar);
+                                    li.etiqueta = etiqueta;
+                                    for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                        li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                    }
+                                    dato = li.elementos.get(palabra);
+                                } else if (especificaCache.getAlgoReemplazo() == UtilCache.FIFO) {
+                                    int lineaReemplazar = CAFIFO.get(0);
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
+                                    CAFIFO.remove(0);
+                                    CAFIFO.add(lineaReemplazar); //pasar al final de la cola
+                                    CALRU.remove(new Integer(lineaReemplazar));
+                                    CALRU.add(lineaReemplazar); // Nuevo usado mas recientemente
+                                    Linea li = CACHE.get(lineaReemplazar);
+                                    li.etiqueta = etiqueta;
+                                    for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                        li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                    }
+                                    dato = li.elementos.get(palabra);
+                                } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO) {
+                                    int lineaReemplazar = (int) (Math.random() * especificaCache.getNumTotalLineas());
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
+                                    Linea li = CACHE.get(lineaReemplazar);
+                                    li.etiqueta = etiqueta;
+                                    for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                        li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                    }
+                                    dato = li.elementos.get(palabra);
+                                }
+                            }
+                            break;
+                        case UtilCache.POR_CONJUNTO:
+                            //Asociativa por conjunto
+                            int numConjunto = (int) (numBloque % especificaCache.getCantidadDeConjuntos());
+                            int lineaExit = -1;
+                            for (int i = 0; i < especificaCache.getCantidadLineasPorConjunto(); i++) { //Verifiacndo si el dato ya esta en cache
+                                Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + i);
+                                if (li.etiqueta != null && li.etiqueta.equals(etiqueta)) {
+                                    lineaExit = numConjunto * especificaCache.getCantidadLineasPorConjunto() + i;
+                                    break;
+                                }
+                            }
+                            if (lineaExit != -1) { //Exito en la cache
+                                aciertos++;
+                                txtAciertos.setText(String.valueOf(aciertos));
+                                tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + lineaExit});
+                                tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
+                                dato = CACHE.get(lineaExit).elementos.get(palabra);
+                                CONJUNTOLRU.get(numConjunto).remove(new Integer(lineaExit));
+                                CONJUNTOLRU.get(numConjunto).add(lineaExit);
+                            } else { //NO HAY EXITO EN CACHE
+                                fallos++;
+                                txtFallos.setText(String.valueOf(fallos));
+                                tablaPasos.addRow(new Object[]{"Fallo en Cache"});
+                                //pasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
+                                tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
+                                int numElemEnCache = CONJUNTOFIFO.get(numConjunto).size(); //verificar si la cache esta llena
+                                if (numElemEnCache < especificaCache.getCantidadLineasPorConjunto()) { //Hay espacio en cache: Meter dato en una linea vacia
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
+                                    Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
+                                    li.etiqueta = etiqueta;
+                                    for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                        li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                    }
+                                    dato = li.elementos.get(palabra);
+                                    CONJUNTOFIFO.get(numConjunto).add(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
+                                    CONJUNTOLRU.get(numConjunto).add(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
+                                } else if (especificaCache.getAlgoReemplazo() == UtilCache.LRU) { //Si la Cache esta llena, Usar un algoritmo de Sustitucion
+                                    int lineaReemplazar = CONJUNTOLRU.get(numConjunto).get(0);
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
+                                    CONJUNTOLRU.get(numConjunto).remove(0);
+                                    CONJUNTOLRU.get(numConjunto).add(lineaReemplazar);
+                                    CONJUNTOFIFO.get(numConjunto).remove(new Integer(lineaReemplazar)); //Nuevo dato, pasar al ultimo de la cola
+                                    CONJUNTOFIFO.get(numConjunto).add(lineaReemplazar);
+                                    Linea li = CACHE.get(lineaReemplazar);
+                                    li.etiqueta = etiqueta;
+                                    for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                        li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                    }
+                                    dato = li.elementos.get(palabra);
+                                } else if (especificaCache.getAlgoReemplazo() == UtilCache.FIFO) {
+                                    int lineaReemplazar = CONJUNTOFIFO.get(numConjunto).get(0);
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
+                                    CONJUNTOFIFO.get(numConjunto).remove(0);
+                                    CONJUNTOFIFO.get(numConjunto).add(lineaReemplazar); //pasar al final de la cola
+                                    CONJUNTOLRU.get(numConjunto).remove(new Integer(lineaReemplazar));
+                                    CONJUNTOLRU.get(numConjunto).add(lineaReemplazar); // Nuevo usado mas recientemente
+                                    Linea li = CACHE.get(lineaReemplazar);
+                                    li.etiqueta = etiqueta;
+                                    for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                        li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                    }
+                                    dato = li.elementos.get(palabra);
+                                } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO) {
+                                    int lineaReemplazar = (int) (Math.random() * especificaCache.getCantidadLineasPorConjunto());
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
+                                    Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + lineaReemplazar);
+                                    li.etiqueta = etiqueta;
+                                    for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                        li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                    }
+                                    dato = li.elementos.get(palabra);
+                                }
+                            }
+                            break;
+
+                    }
+                    tablaPasos.addRow(new Object[]{"Dato devuelto al CPU:      " + dato});
+                    tablaPasos.addRow(new Object[]{"-------------------------------------------"});
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(this, "No hay Peticiones que procesar", "Advertencia!", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (IndexOutOfBoundsException e) {
             DefaultTableModel tablaDirecciones = (DefaultTableModel) tlbEjecucion.getModel();
             DefaultTableModel tablaPasos = (DefaultTableModel) tlbPasosSeguidos.getModel();
             for (int i = tlbEjecucion.getRowCount() - 1; i >= 0; i--) {
@@ -949,210 +1163,9 @@ public class Home extends javax.swing.JPanel {
             for (int i = tlbPasosSeguidos.getRowCount() - 1; i >= 0; i--) {
                 tablaPasos.removeRow(i);
             }
-
-            int aciertos = 0;
-            int fallos = 0;
-
-            for (Peticion p : listaPeticiones) {
-                tablaPasos.addRow(new Object[]{"CPU lanza una Peticion"});
-                tablaPasos.addRow(new Object[]{"Calculando Direccion Fisica..."});
-
-                String dir = UtilDireccionamiento.generarDireccionFisica(p);
-                detallesFormato(dir, tablaDirecciones); // Detalles de direccion en tabla
-
-                tablaPasos.addRow(new Object[]{"Direccion Fisica Calculada: " + dir});
-                tablaPasos.addRow(new Object[]{"Verificando la Cache"});
-
-                String etiqueta = UtilCache.generarEtiqueta(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatEtiqueta());
-                long numBloque = UtilCache.generarBloqueMP(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatPalabra());
-                int palabra = UtilCache.generarPalabra(dir, especiRam.getMaxDireccionable(), especificaCache.getFormatPalabra());
-                String dato = null;
-
-                if (p.getTipoPeticion() == UtilDireccionamiento.ESCRITURA) {
-                    RAM.set((int) numBloque * especiRam.getTamañoBloque() + palabra, p.getCampoDatoEscribir());
-                }
-
-                switch (especificaCache.getFuncionCorrespondencia()) {
-                    case UtilCache.DIRECTA:
-                        long numLinea = numBloque % especificaCache.getNumTotalLineas();
-                        Linea l = CACHE.get((int) numLinea);
-                        if (l.etiqueta != null && l.etiqueta.equals(etiqueta)) {
-                            for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                l.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                            }
-                            aciertos++;
-                            txtAciertos.setText(String.valueOf(aciertos));
-                            tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + numLinea});
-                            dato = l.elementos.get(palabra);
-                            //tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
-                        } else { //Fallo en la Cache
-                            fallos++;
-                            txtFallos.setText(String.valueOf(fallos));
-                            tablaPasos.addRow(new Object[]{"Fallo en Cache"});
-                            tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
-                            dato = RAM.get((int) numBloque * especiRam.getTamañoBloque() + palabra);
-                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU: " + dato});
-                            l.etiqueta = etiqueta;
-                            for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                l.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                            }
-                        }
-                        break;
-                    case UtilCache.ASOCIATIVA:
-                        int lineaExito = -1;
-                        for (int i = 0; i < especificaCache.getNumTotalLineas(); i++) { //Verifiacndo si el dato ya esta en cache
-                            Linea li = CACHE.get(i);
-                            if (li.etiqueta != null && li.etiqueta.equals(etiqueta)) {
-                                lineaExito = i;
-                                break;
-                            }
-                        }
-                        if (lineaExito != -1) { //Exito en la cache
-                            aciertos++;
-                            txtAciertos.setText(String.valueOf(aciertos));
-                            tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + lineaExito});
-                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
-                            dato = CACHE.get(lineaExito).elementos.get(palabra);
-                            CALRU.remove(new Integer(lineaExito)); //Eliminar de su posicion actual
-                            CALRU.add(lineaExito); //Pasar al mas usado recientemente
-                        } else { //NO HAY EXITO EN CACHE
-                            fallos++;
-                            txtFallos.setText(String.valueOf(fallos));
-                            tablaPasos.addRow(new Object[]{"Fallo en Cache"});
-                            //pasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
-                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
-                            int numElemEnCache = CAFIFO.size(); //verificar si la cache esta llena
-                            if (numElemEnCache < especificaCache.getNumTotalLineas()) { //Hay espacio en cache: Meter dato en una linea vacia
-                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numElemEnCache});
-                                Linea li = CACHE.get(numElemEnCache);
-                                li.etiqueta = etiqueta;
-                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                                }
-                                dato = li.elementos.get(palabra);
-                                CAFIFO.add(numElemEnCache);
-                                CALRU.add(numElemEnCache); //Usado mas recientemente
-                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.LRU) { //Si la Cache esta llena, Usar un algoritmo de Sustitucion
-                                int lineaReemplazar = CALRU.get(0);
-                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
-                                CALRU.remove(0);
-                                CALRU.add(lineaReemplazar); //Usado mas recientemente
-                                CAFIFO.remove(new Integer(lineaReemplazar)); //Nuevo dato, pasar al ultimo de la cola
-                                CAFIFO.add(lineaReemplazar);
-                                Linea li = CACHE.get(lineaReemplazar);
-                                li.etiqueta = etiqueta;
-                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                                }
-                                dato = li.elementos.get(palabra);
-                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.FIFO) {
-                                int lineaReemplazar = CAFIFO.get(0);
-                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
-                                CAFIFO.remove(0);
-                                CAFIFO.add(lineaReemplazar); //pasar al final de la cola
-                                CALRU.remove(new Integer(lineaReemplazar));
-                                CALRU.add(lineaReemplazar); // Nuevo usado mas recientemente
-                                Linea li = CACHE.get(lineaReemplazar);
-                                li.etiqueta = etiqueta;
-                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                                }
-                                dato = li.elementos.get(palabra);
-                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO) {
-                                int lineaReemplazar = (int) (Math.random() * especificaCache.getNumTotalLineas());
-                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
-                                Linea li = CACHE.get(lineaReemplazar);
-                                li.etiqueta = etiqueta;
-                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                                }
-                                dato = li.elementos.get(palabra);
-                            }
-                        }
-                        break;
-                    case UtilCache.POR_CONJUNTO:
-                        //Asociativa por conjunto
-                        int numConjunto = (int) (numBloque % especificaCache.getCantidadDeConjuntos());
-                        int lineaExit = -1;
-                        for (int i = 0; i < especificaCache.getCantidadLineasPorConjunto(); i++) { //Verifiacndo si el dato ya esta en cache
-                            Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + i);
-                            if (li.etiqueta != null && li.etiqueta.equals(etiqueta)) {
-                                lineaExit = numConjunto * especificaCache.getCantidadLineasPorConjunto() + i;
-                                break;
-                            }
-                        }
-                        if (lineaExit != -1) { //Exito en la cache
-                            aciertos++;
-                            txtAciertos.setText(String.valueOf(aciertos));
-                            tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + lineaExit});
-                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
-                            dato = CACHE.get(lineaExit).elementos.get(palabra);
-                            CONJUNTOLRU.get(numConjunto).remove(new Integer(lineaExit));
-                            CONJUNTOLRU.get(numConjunto).add(lineaExit);
-                        } else { //NO HAY EXITO EN CACHE
-                            fallos++;
-                            txtFallos.setText(String.valueOf(fallos));
-                            tablaPasos.addRow(new Object[]{"Fallo en Cache"});
-                            //pasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
-                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
-                            int numElemEnCache = CONJUNTOFIFO.get(numConjunto).size(); //verificar si la cache esta llena
-                            if (numElemEnCache < especificaCache.getCantidadLineasPorConjunto()) { //Hay espacio en cache: Meter dato en una linea vacia
-                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
-                                Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
-                                li.etiqueta = etiqueta;
-                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                                }
-                                dato = li.elementos.get(palabra);
-                                CONJUNTOFIFO.get(numConjunto).add(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
-                                CONJUNTOLRU.get(numConjunto).add(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
-                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.LRU) { //Si la Cache esta llena, Usar un algoritmo de Sustitucion
-                                int lineaReemplazar = CONJUNTOLRU.get(numConjunto).get(0);
-                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
-                                CONJUNTOLRU.get(numConjunto).remove(0);
-                                CONJUNTOLRU.get(numConjunto).add(lineaReemplazar);
-                                CONJUNTOFIFO.get(numConjunto).remove(new Integer(lineaReemplazar)); //Nuevo dato, pasar al ultimo de la cola
-                                CONJUNTOFIFO.get(numConjunto).add(lineaReemplazar);
-                                Linea li = CACHE.get(lineaReemplazar);
-                                li.etiqueta = etiqueta;
-                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                                }
-                                dato = li.elementos.get(palabra);
-                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.FIFO) {
-                                int lineaReemplazar = CONJUNTOFIFO.get(numConjunto).get(0);
-                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
-                                CONJUNTOFIFO.get(numConjunto).remove(0);
-                                CONJUNTOFIFO.get(numConjunto).add(lineaReemplazar); //pasar al final de la cola
-                                CONJUNTOLRU.get(numConjunto).remove(new Integer(lineaReemplazar));
-                                CONJUNTOLRU.get(numConjunto).add(lineaReemplazar); // Nuevo usado mas recientemente
-                                Linea li = CACHE.get(lineaReemplazar);
-                                li.etiqueta = etiqueta;
-                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                                }
-                                dato = li.elementos.get(palabra);
-                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO) {
-                                int lineaReemplazar = (int) (Math.random() * especificaCache.getCantidadLineasPorConjunto());
-                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
-                                Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + lineaReemplazar);
-                                li.etiqueta = etiqueta;
-                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
-                                }
-                                dato = li.elementos.get(palabra);
-                            }
-                        }
-                        break;
-
-                }
-                tablaPasos.addRow(new Object[]{"Dato devuelto al CPU:      " + dato});
-                tablaPasos.addRow(new Object[]{"-------------------------------------------"});
-            }
-
-        } else {
-            JOptionPane.showMessageDialog(this, "No hay Peticiones que procesar", "Advertencia!", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "La dirección calculada o indicada está fuera del rango de la RAM", "Error!", JOptionPane.ERROR_MESSAGE);
         }
+
     }//GEN-LAST:event_btnProcesarActionPerformed
 
     private void detallesFormato(String dirHexa, DefaultTableModel tabla) {
