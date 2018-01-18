@@ -14,7 +14,6 @@ import cpu.Peticion;
 import cpu.UtilDireccionamiento;
 import java.util.ArrayList;
 import java.util.List;
-import javax.print.DocFlavor;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import utilidades.UnidadMedida;
@@ -37,6 +36,10 @@ public class Home extends javax.swing.JPanel {
     //LISTA QUE DAN SOPORTE A REEMPLAZAMIENTO FIFO Y LRU DE LA TOTALMENTE ASOCIATIVA
     List<Integer> CAFIFO = new ArrayList<>();
     List<Integer> CALRU = new ArrayList<>();
+
+    //LISTAS QUE DAN SOPORTE A REEMPLAZO FIFO Y LRU EN POR CONJUNTOS
+    List<ArrayList<Integer>> CONJUNTOFIFO = new ArrayList<>();
+    List<ArrayList<Integer>> CONJUNTOLRU = new ArrayList<>();
 
     /**
      * Creates new form Home
@@ -79,7 +82,7 @@ public class Home extends javax.swing.JPanel {
         etiMaxDireccionable.setText("Maximo Direccionable: " + especiRam.getMaxDireccionable() + " bits");
 
         //Bus de datos
-        switch(especiRam.getNivelDireccionable()){
+        switch (especiRam.getNivelDireccionable()) {
             case UnidadMedida.BYTE:
                 etiBusDatos.setText("Bus de datos: 8 bits");
                 break;
@@ -87,7 +90,7 @@ public class Home extends javax.swing.JPanel {
                 int numBits = 8 * especiRam.getTamañoPalabra();
                 etiBusDatos.setText("Bus de datos: " + numBits + " bits");
         }
-        
+
         //Creacion del componente que representara a la RAM
         switch (especiRam.getTipoLlenado()) {
             case UtilCache.MANUAL:
@@ -223,6 +226,20 @@ public class Home extends javax.swing.JPanel {
             case UtilCache.MANUAL:
                 Home.CACHE = null;
                 Home.CACHE = new ArrayList<>();
+                CAFIFO = null;
+                CALRU = null;
+                CAFIFO = new ArrayList<>();
+                CALRU = new ArrayList<>();
+                CONJUNTOFIFO = null;
+                CONJUNTOLRU = null;
+                CONJUNTOFIFO = new ArrayList<>();
+                CONJUNTOLRU = new ArrayList<>();
+                if (especificaCache.getFuncionCorrespondencia() == UtilCache.POR_CONJUNTO) {
+                    for (int i = 0; i < especificaCache.getCantidadDeConjuntos(); i++) {
+                        CONJUNTOFIFO.add(new ArrayList());
+                        CONJUNTOLRU.add(new ArrayList());
+                    }
+                }
                 String cadByte = "00";
                 String dato = "";
                 if (especificaRam.getNivelDireccionable() == UnidadMedida.PALABRA) {
@@ -261,9 +278,9 @@ public class Home extends javax.swing.JPanel {
                         CALRU = null;
                         CAFIFO = new ArrayList<>();
                         CALRU = new ArrayList<>();
-                        for(int i = 0; i < especificaCache.getNumTotalLineas(); i++){
+                        for (int i = 0; i < especificaCache.getNumTotalLineas(); i++) {
                             Linea l = new Linea();
-                            for(int j = 0; j < especificaRam.getTamañoBloque(); j++){
+                            for (int j = 0; j < especificaRam.getTamañoBloque(); j++) {
                                 l.elementos.add(Home.RAM.get(i * especificaRam.getTamañoBloque() + j));
                             }
                             String direccion = Integer.toHexString(i * especificaRam.getTamañoBloque());
@@ -275,6 +292,14 @@ public class Home extends javax.swing.JPanel {
                         }
                         break;
                     case UtilCache.POR_CONJUNTO:
+                        CONJUNTOFIFO = null;
+                        CONJUNTOLRU = null;
+                        CONJUNTOFIFO = new ArrayList<>();
+                        CONJUNTOLRU = new ArrayList<>();
+                        for (int i = 0; i < especificaCache.getCantidadDeConjuntos(); i++) {
+                            CONJUNTOFIFO.add(new ArrayList());
+                            CONJUNTOLRU.add(new ArrayList());
+                        }
                         break;
                 }
         }
@@ -1002,7 +1027,7 @@ public class Home extends javax.swing.JPanel {
                                 Linea li = CACHE.get(numElemEnCache);
                                 li.etiqueta = etiqueta;
                                 for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
                                 }
                                 dato = li.elementos.get(palabra);
                                 CAFIFO.add(numElemEnCache);
@@ -1017,7 +1042,7 @@ public class Home extends javax.swing.JPanel {
                                 Linea li = CACHE.get(lineaReemplazar);
                                 li.etiqueta = etiqueta;
                                 for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
                                 }
                                 dato = li.elementos.get(palabra);
                             } else if (especificaCache.getAlgoReemplazo() == UtilCache.FIFO) {
@@ -1030,27 +1055,98 @@ public class Home extends javax.swing.JPanel {
                                 Linea li = CACHE.get(lineaReemplazar);
                                 li.etiqueta = etiqueta;
                                 for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
                                 }
                                 dato = li.elementos.get(palabra);
-                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO){
-                                int lineaReemplazar = (int)(Math.random() * especificaCache.getNumTotalLineas());
+                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO) {
+                                int lineaReemplazar = (int) (Math.random() * especificaCache.getNumTotalLineas());
                                 tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea: " + lineaReemplazar});
                                 Linea li = CACHE.get(lineaReemplazar);
                                 li.etiqueta = etiqueta;
                                 for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
-                                    li.elementos.set(i, RAM.get((int)numBloque * especiRam.getTamañoBloque() + i));
+                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
                                 }
                                 dato = li.elementos.get(palabra);
                             }
-                    }
+                        }
                         break;
                     case UtilCache.POR_CONJUNTO:
                         //Asociativa por conjunto
+                        int numConjunto = (int) (numBloque % especificaCache.getCantidadDeConjuntos());
+                        int lineaExit = -1;
+                        for (int i = 0; i < especificaCache.getCantidadLineasPorConjunto(); i++) { //Verifiacndo si el dato ya esta en cache
+                            Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + i);
+                            if (li.etiqueta != null && li.etiqueta.equals(etiqueta)) {
+                                lineaExit = numConjunto * especificaCache.getCantidadLineasPorConjunto() + i;
+                                break;
+                            }
+                        }
+                        if (lineaExit != -1) { //Exito en la cache
+                            aciertos++;
+                            txtAciertos.setText(String.valueOf(aciertos));
+                            tablaPasos.addRow(new Object[]{"Acierto en Cache. Linea: " + lineaExit});
+                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
+                            dato = CACHE.get(lineaExit).elementos.get(palabra);
+                            CONJUNTOLRU.get(numConjunto).remove(new Integer(lineaExit));
+                            CONJUNTOLRU.get(numConjunto).add(lineaExit);
+                        } else { //NO HAY EXITO EN CACHE
+                            fallos++;
+                            txtFallos.setText(String.valueOf(fallos));
+                            tablaPasos.addRow(new Object[]{"Fallo en Cache"});
+                            //pasos.addRow(new Object[]{"Actualizando Cache. Linea: " + numLinea});
+                            tablaPasos.addRow(new Object[]{"Devolviendo dato a CPU. Palabra: " + palabra});
+                            int numElemEnCache = CONJUNTOFIFO.get(numConjunto).size(); //verificar si la cache esta llena
+                            if (numElemEnCache < especificaCache.getCantidadLineasPorConjunto()) { //Hay espacio en cache: Meter dato en una linea vacia
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
+                                Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
+                                li.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                dato = li.elementos.get(palabra);
+                                CONJUNTOFIFO.get(numConjunto).add(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
+                                CONJUNTOLRU.get(numConjunto).add(numConjunto * especificaCache.getCantidadLineasPorConjunto() + numElemEnCache);
+                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.LRU) { //Si la Cache esta llena, Usar un algoritmo de Sustitucion
+                                int lineaReemplazar = CONJUNTOLRU.get(numConjunto).get(0);
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
+                                CONJUNTOLRU.get(numConjunto).remove(0);
+                                CONJUNTOLRU.get(numConjunto).add(lineaReemplazar);
+                                CONJUNTOFIFO.get(numConjunto).remove(new Integer(lineaReemplazar)); //Nuevo dato, pasar al ultimo de la cola
+                                CONJUNTOFIFO.get(numConjunto).add(lineaReemplazar);
+                                Linea li = CACHE.get(lineaReemplazar);
+                                li.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                dato = li.elementos.get(palabra);
+                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.FIFO) {
+                                int lineaReemplazar = CONJUNTOFIFO.get(numConjunto).get(0);
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
+                                CONJUNTOFIFO.get(numConjunto).remove(0);
+                                CONJUNTOFIFO.get(numConjunto).add(lineaReemplazar); //pasar al final de la cola
+                                CONJUNTOLRU.get(numConjunto).remove(new Integer(lineaReemplazar));
+                                CONJUNTOLRU.get(numConjunto).add(lineaReemplazar); // Nuevo usado mas recientemente
+                                Linea li = CACHE.get(lineaReemplazar);
+                                li.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                dato = li.elementos.get(palabra);
+                            } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO) {
+                                int lineaReemplazar = (int) (Math.random() * especificaCache.getCantidadLineasPorConjunto());
+                                tablaPasos.addRow(new Object[]{"Actualizando Cache. Conjunto: " + numConjunto});
+                                Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + lineaReemplazar);
+                                li.etiqueta = etiqueta;
+                                for (int i = 0; i < especiRam.getTamañoBloque(); i++) {
+                                    li.elementos.set(i, RAM.get((int) numBloque * especiRam.getTamañoBloque() + i));
+                                }
+                                dato = li.elementos.get(palabra);
+                            }
+                        }
                         break;
-                    
+
                 }
-                tablaPasos.addRow(new Object[]{"Dato devuelto al CPU:" + dato});
+                tablaPasos.addRow(new Object[]{"Dato devuelto al CPU:      " + dato});
                 tablaPasos.addRow(new Object[]{"-------------------------------------------"});
             }
 

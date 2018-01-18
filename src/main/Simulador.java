@@ -5,13 +5,10 @@
  */
 package main;
 
-import cache.Linea;
 import configuraciones.EspecificacionCache;
 import configuraciones.EspecificacionRam;
 import configuraciones.EstadoEspecificacion;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 import paneles.Componentes;
 import paneles.Home;
 import paneles.Personalizacion;

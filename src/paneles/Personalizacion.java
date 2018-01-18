@@ -513,7 +513,6 @@ public class Personalizacion extends javax.swing.JPanel {
                 pintarDetallesEnTabla();
             }
         }
-        System.out.println("Hola");
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void comboDireccionableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboDireccionableActionPerformed
