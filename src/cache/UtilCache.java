@@ -42,7 +42,10 @@ public class UtilCache {
         int palabra;
         String binario = UtilDireccionamiento.direccionEnBinario(direccion, maxDireccionable);
         String palaString = binario.substring(maxDireccionable - bitsPalabra);
-        palabra = Integer.parseInt(palaString, 2);
+        if(bitsPalabra != 0)
+            palabra = Integer.parseInt(palaString, 2);
+        else
+            palabra = 0;
         return palabra;
     }
     

@@ -474,10 +474,10 @@ public class Personalizacion extends javax.swing.JPanel {
                             comboBytesCache.getSelectedIndex(), comboCorrespondencia.getSelectedIndex(),
                             comboAlgoReemplazo.getSelectedIndex(), auxRam);
 
-                    if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO && !numLineasConjunto.isEmpty() && Integer.parseInt(numLineasConjunto) > 1) {
+                    if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO && !numLineasConjunto.isEmpty() && Integer.parseInt(numLineasConjunto) > 1 && Validador.esPotenciaDeDos(numLineasConjunto) > 0) {
                         auxCache.setCantidadLineasPorConjunto(Integer.parseInt(numLineasConjunto));
                     } else if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO) {
-                        mensaje = "Numero de lineas para el conjunto debe ser mayor que 1.";
+                        mensaje = "Numero de lineas para el conjunto debe ser mayor que 1 y potencia de 2.";
                     }
 
                     auxCache.realizarCalculos();
@@ -497,6 +497,7 @@ public class Personalizacion extends javax.swing.JPanel {
             especificacionCache = auxCache;
             especificacionRam = auxRam;
             pintarDetallesEnTabla();
+            JOptionPane.showMessageDialog(this, "Arquitectura Aplicada con exito.", "Guardado", JOptionPane.INFORMATION_MESSAGE);
         } else {
             if (!especificacionCache.equals(auxCache)) {
                 especificacionCache = null;
@@ -504,6 +505,7 @@ public class Personalizacion extends javax.swing.JPanel {
                 EstadoEspecificacion.setEspeciCacheEnHome(false); //Especificacion sin aplicar
                 EstadoEspecificacion.setEspeciCacheEnCompo(false); //Especificacion sin aplicar
                 pintarDetallesEnTabla();
+                JOptionPane.showMessageDialog(this, "Arquitectura Aplicada con exito.", "Guardado", JOptionPane.INFORMATION_MESSAGE);
             }
             if (!especificacionRam.equals(auxRam)) {
                 especificacionRam = null;
@@ -511,6 +513,7 @@ public class Personalizacion extends javax.swing.JPanel {
                 EstadoEspecificacion.setEspeciRamEnHome(false); //Especificacion sin aplicar
                 EstadoEspecificacion.setEspeciRamEnCompo(false);//Especificacion sin aplicar
                 pintarDetallesEnTabla();
+                JOptionPane.showMessageDialog(this, "Arquitectura Aplicada con exito.", "Guardado", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
