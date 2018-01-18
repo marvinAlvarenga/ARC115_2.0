@@ -300,6 +300,29 @@ public class Home extends javax.swing.JPanel {
                             CONJUNTOFIFO.add(new ArrayList());
                             CONJUNTOLRU.add(new ArrayList());
                         }
+                        for(int i = 0; i < especificaCache.getCantidadDeConjuntos(); i++){
+                            for(int j = 0; j < especificaCache.getCantidadLineasPorConjunto(); j++){
+                                Linea l = new Linea();
+                                for(int z = 0; z < especificaRam.getTamañoBloque(); z++){
+                                    if(j == 0){
+                                        l.elementos.add(Home.RAM.get(i * especificaRam.getTamañoBloque() + z));
+                                    }else{
+                                        l.elementos.add(Home.RAM.get((int) (especificaRam.getTamañoBloque() * especificaCache.getCantidadDeConjuntos() * j + i * especificaRam.getTamañoBloque() + z)));
+                                    }
+                                }
+                                String direccion;
+                                if(j == 0){
+                                    direccion = Integer.toHexString(i * especificaRam.getTamañoBloque());
+                                }else{
+                                    direccion = Integer.toHexString((int) (especificaRam.getTamañoBloque() * especificaCache.getCantidadDeConjuntos() * j + i * especificaRam.getTamañoBloque()));
+                                }
+                                String eti = UtilCache.generarEtiqueta(direccion, especificaRam.getMaxDireccionable(), especificaCache.getFormatEtiqueta());
+                                l.etiqueta = eti;
+                                Home.CACHE.add(l);
+                                CONJUNTOLRU.get(i).add(i * especificaCache.getCantidadLineasPorConjunto() + j);
+                                CONJUNTOFIFO.get(i).add(i * especificaCache.getCantidadLineasPorConjunto() + j);
+                            }
+                        }
                         break;
                 }
         }
