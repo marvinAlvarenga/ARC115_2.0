@@ -24,6 +24,8 @@ public class Personalizacion extends javax.swing.JPanel {
     private EspecificacionCache especificacionCache;
     private EspecificacionRam especificacionRam;
 
+    private final long LIMITE_BYTES = (long)(16 * Math.pow(2, 20));
+    
     /**
      * Creates new form Personalizacion
      */
@@ -436,24 +438,36 @@ public class Personalizacion extends javax.swing.JPanel {
                 switch (comboBytesRam.getSelectedIndex()) {
                     case UnidadMedida.KILO_BYTE:
                         capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 10);
+                        if(capacidadRAM > LIMITE_BYTES)
+                            mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
                         break;
                     case UnidadMedida.MEGA_BYTE:
                         capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 20);
+                        if(capacidadRAM > LIMITE_BYTES)
+                            mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
                         break;
                     case UnidadMedida.GIGA_BYTE:
                         capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 30);
+                        if(capacidadRAM > LIMITE_BYTES)
+                            mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
                         break;
                 }
                 long capacidadCACHE = 0;
                 switch (comboBytesCache.getSelectedIndex()) {
                     case UnidadMedida.KILO_BYTE:
                         capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 10);
+                        if(capacidadCACHE > LIMITE_BYTES)
+                            mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
                         break;
                     case UnidadMedida.MEGA_BYTE:
                         capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 20);
+                        if(capacidadCACHE > LIMITE_BYTES)
+                            mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
                         break;
                     case UnidadMedida.GIGA_BYTE:
                         capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 30);
+                        if(capacidadCACHE > LIMITE_BYTES)
+                            mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
                         break;
                 }
                 if (capacidadRAM > capacidadCACHE) {
