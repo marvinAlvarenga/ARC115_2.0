@@ -24,8 +24,8 @@ public class Personalizacion extends javax.swing.JPanel {
     private EspecificacionCache especificacionCache;
     private EspecificacionRam especificacionRam;
 
-    private final long LIMITE_BYTES = (long)(16 * Math.pow(2, 20));
-    
+    private final long LIMITE_BYTES = (long) (16 * Math.pow(2, 20));
+
     /**
      * Creates new form Personalizacion
      */
@@ -425,82 +425,90 @@ public class Personalizacion extends javax.swing.JPanel {
         int direccionableRam = comboDireccionable.getSelectedIndex();
 
         if (!capaRam.isEmpty() && !tamBloques.isEmpty() && !capaCache.isEmpty()) {
+            if (Integer.parseInt(capaRam) > 0 && Integer.parseInt(tamBloques) > 0 && Integer.parseInt(capaCache) > 0) {
+                if (Validador.esPotenciaDeDos(capaRam) < 0) {
+                    mensaje = "La capacidad de RAM debe ser potencia de 2.";
+                } else if (Validador.esPotenciaDeDos(tamBloques) < 0) {
+                    mensaje = "El tamaño de bloques debe ser potencia de 2.";
+                } else if (Validador.esPotenciaDeDos(capaCache) < 0) {
+                    mensaje = "La capacidad de CACHE debe de ser potencia de 2";
+                } else {
+                    // Comparar las capacidades de RAM  y  CACHE
+                    long capacidadRAM = 0;
+                    switch (comboBytesRam.getSelectedIndex()) {
+                        case UnidadMedida.KILO_BYTE:
+                            capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 10);
+                            if (capacidadRAM > LIMITE_BYTES) {
+                                mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
+                            }
+                            break;
+                        case UnidadMedida.MEGA_BYTE:
+                            capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 20);
+                            if (capacidadRAM > LIMITE_BYTES) {
+                                mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
+                            }
+                            break;
+                        case UnidadMedida.GIGA_BYTE:
+                            capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 30);
+                            if (capacidadRAM > LIMITE_BYTES) {
+                                mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
+                            }
+                            break;
+                    }
+                    long capacidadCACHE = 0;
+                    switch (comboBytesCache.getSelectedIndex()) {
+                        case UnidadMedida.KILO_BYTE:
+                            capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 10);
+                            if (capacidadCACHE > LIMITE_BYTES) {
+                                mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
+                            }
+                            break;
+                        case UnidadMedida.MEGA_BYTE:
+                            capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 20);
+                            if (capacidadCACHE > LIMITE_BYTES) {
+                                mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
+                            }
+                            break;
+                        case UnidadMedida.GIGA_BYTE:
+                            capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 30);
+                            if (capacidadCACHE > LIMITE_BYTES) {
+                                mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
+                            }
+                            break;
+                    }
+                    if (capacidadRAM > capacidadCACHE) {
+                        auxRam = new EspecificacionRam(Integer.parseInt(capaRam),
+                                comboBytesRam.getSelectedIndex(),
+                                comboDireccionable.getSelectedIndex(),
+                                Integer.parseInt(tamBloques), comboLlenadoRam.getSelectedIndex());
 
-            if (Validador.esPotenciaDeDos(capaRam) < 0) {
-                mensaje = "La capacidad de RAM debe ser potencia de 2.";
-            } else if (Validador.esPotenciaDeDos(tamBloques) < 0) {
-                mensaje = "El tamaño de bloques debe ser potencia de 2.";
-            } else if (Validador.esPotenciaDeDos(capaCache) < 0) {
-                mensaje = "La capacidad de CACHE debe de ser potencia de 2";
-            } else {
-                // Comparar las capacidades de RAM  y  CACHE
-                long capacidadRAM = 0;
-                switch (comboBytesRam.getSelectedIndex()) {
-                    case UnidadMedida.KILO_BYTE:
-                        capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 10);
-                        if(capacidadRAM > LIMITE_BYTES)
-                            mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
-                        break;
-                    case UnidadMedida.MEGA_BYTE:
-                        capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 20);
-                        if(capacidadRAM > LIMITE_BYTES)
-                            mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
-                        break;
-                    case UnidadMedida.GIGA_BYTE:
-                        capacidadRAM = Integer.parseInt(capaRam) * (long) Math.pow(2, 30);
-                        if(capacidadRAM > LIMITE_BYTES)
-                            mensaje = "El limite de la RAM es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
-                        break;
-                }
-                long capacidadCACHE = 0;
-                switch (comboBytesCache.getSelectedIndex()) {
-                    case UnidadMedida.KILO_BYTE:
-                        capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 10);
-                        if(capacidadCACHE > LIMITE_BYTES)
-                            mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
-                        break;
-                    case UnidadMedida.MEGA_BYTE:
-                        capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 20);
-                        if(capacidadCACHE > LIMITE_BYTES)
-                            mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
-                        break;
-                    case UnidadMedida.GIGA_BYTE:
-                        capacidadCACHE = Integer.parseInt(capaCache) * (long) Math.pow(2, 30);
-                        if(capacidadCACHE > LIMITE_BYTES)
-                            mensaje = "El limite de la CACHE es de 16 MB. Para evitar llenar el almacenamiento dinamico de la JVM (ya no se podrian seguir creando objetos)";
-                        break;
-                }
-                if (capacidadRAM > capacidadCACHE) {
-                    auxRam = new EspecificacionRam(Integer.parseInt(capaRam),
-                            comboBytesRam.getSelectedIndex(),
-                            comboDireccionable.getSelectedIndex(),
-                            Integer.parseInt(tamBloques), comboLlenadoRam.getSelectedIndex());
+                        if (direccionableRam == UnidadMedida.PALABRA && !tamPalabra.isEmpty() && Integer.parseInt(tamPalabra) > 0 && Validador.esPotenciaDeDos(tamPalabra) >= 0) { //Direccionamiento por palabra
+                            auxRam.setTamañoPalabra(Integer.parseInt(tamPalabra));
+                        } else if (direccionableRam == UnidadMedida.PALABRA) {
+                            mensaje = "El tamaño de palabra no es valido.";
+                        }
 
-                    if (direccionableRam == UnidadMedida.PALABRA && !tamPalabra.isEmpty() && Validador.esPotenciaDeDos(tamPalabra) >= 0) { //Direccionamiento por palabra
-                        auxRam.setTamañoPalabra(Integer.parseInt(tamPalabra));
-                    } else if (direccionableRam == UnidadMedida.PALABRA) {
-                        mensaje = "El tamaño de palabra no es valido.";
+                        auxRam.realizarCalculos();
+
+                        auxCache = new EspecificacionCache(Integer.parseInt(capaCache),
+                                comboBytesCache.getSelectedIndex(), comboCorrespondencia.getSelectedIndex(),
+                                comboAlgoReemplazo.getSelectedIndex(), auxRam);
+
+                        if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO && !numLineasConjunto.isEmpty() && Integer.parseInt(numLineasConjunto) > 1 && Validador.esPotenciaDeDos(numLineasConjunto) > 0) {
+                            auxCache.setCantidadLineasPorConjunto(Integer.parseInt(numLineasConjunto));
+                        } else if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO) {
+                            mensaje = "Numero de lineas para el conjunto debe ser mayor que 1 y potencia de 2.";
+                        }
+
+                        auxCache.realizarCalculos();
+                    } else {
+                        mensaje = "La capacidad de RAM debe ser mayor a la de la CACHE";
                     }
 
-                    auxRam.realizarCalculos();
-
-                    auxCache = new EspecificacionCache(Integer.parseInt(capaCache),
-                            comboBytesCache.getSelectedIndex(), comboCorrespondencia.getSelectedIndex(),
-                            comboAlgoReemplazo.getSelectedIndex(), auxRam);
-
-                    if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO && !numLineasConjunto.isEmpty() && Integer.parseInt(numLineasConjunto) > 1 && Validador.esPotenciaDeDos(numLineasConjunto) > 0) {
-                        auxCache.setCantidadLineasPorConjunto(Integer.parseInt(numLineasConjunto));
-                    } else if (comboCorrespondencia.getSelectedIndex() == UtilCache.POR_CONJUNTO) {
-                        mensaje = "Numero de lineas para el conjunto debe ser mayor que 1 y potencia de 2.";
-                    }
-
-                    auxCache.realizarCalculos();
-                }else{
-                    mensaje = "La capacidad de RAM debe ser mayor a la de la CACHE";
                 }
-
+            }else{
+                mensaje = "No se admite el valor de cero.";
             }
-
         } else {
             mensaje = "Hay campos sin completar";
         }
