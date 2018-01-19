@@ -428,7 +428,7 @@ public class Home extends javax.swing.JPanel {
         jLabel10.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel10.setText("Formato de direcciones cache");
 
-        tlbFormatoCache.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tlbFormatoCache.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tlbFormatoCache.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1174,7 +1174,7 @@ public class Home extends javax.swing.JPanel {
                                     dato = li.elementos.get(palabra);
                                 } else if (especificaCache.getAlgoReemplazo() == UtilCache.ALEATORIO) {
                                     int lineaReemplazar = (int) (Math.random() * especificaCache.getCantidadLineasPorConjunto());
-                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea:  " + lineaReemplazar + " (Decimal)"});
+                                    tablaPasos.addRow(new Object[]{"Actualizando Cache. Linea:  " + (numConjunto * especificaCache.getCantidadLineasPorConjunto() + lineaReemplazar) + " (Decimal)"});
                                     tablaPasos.addRow(new Object[]{"Accediendo a la palabra:  " + palabra + " (Decimal)"});
                                     Linea li = CACHE.get(numConjunto * especificaCache.getCantidadLineasPorConjunto() + lineaReemplazar);
                                     li.etiqueta = etiqueta;

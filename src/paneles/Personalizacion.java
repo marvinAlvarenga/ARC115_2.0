@@ -506,7 +506,7 @@ public class Personalizacion extends javax.swing.JPanel {
                     }
 
                 }
-            }else{
+            } else {
                 mensaje = "No se admite el valor de cero.";
             }
         } else {
@@ -656,17 +656,20 @@ public class Personalizacion extends javax.swing.JPanel {
         tablaDetalles.addRow(new Object[]{"Correspondencia: " + aux});
 
         //Algoritmo de reemplazo
-        switch (especificacionCache.getAlgoReemplazo()) {
-            case UtilCache.LRU:
-                aux = "LRU";
-                break;
-            case UtilCache.FIFO:
-                aux = "FIFO";
-                break;
-            case UtilCache.ALEATORIO:
-                aux = "Aleatorio";
+        if (especificacionCache.getFuncionCorrespondencia() != UtilCache.DIRECTA) {
+            switch (especificacionCache.getAlgoReemplazo()) {
+                case UtilCache.LRU:
+                    aux = "LRU";
+                    break;
+                case UtilCache.FIFO:
+                    aux = "FIFO";
+                    break;
+                case UtilCache.ALEATORIO:
+                    aux = "Aleatorio";
+            }
+            tablaDetalles.addRow(new Object[]{"Algorimo reemplazo: " + aux});
+
         }
-        tablaDetalles.addRow(new Object[]{"Algorimo reemplazo: " + aux});
 
         //Tamaño de linea cache
         aux = String.valueOf(especificacionCache.getRam().getTamañoBloque());
